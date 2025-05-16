@@ -34,4 +34,17 @@ public class TicketsRepository implements Repository<Ticket> {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public Ticket findById(String id) {
+        try (Connection connection = ConnectionManager.open()) {
+            String query = String.format("SELECT * FROM %s WHERE ticket_no = '%s'", table, id);
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(query);
+
+            return mapper.mapToEntity(result);
+        } catch (SQLException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

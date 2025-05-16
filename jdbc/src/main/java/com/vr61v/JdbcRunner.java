@@ -7,6 +7,7 @@ import com.vr61v.repositories.TicketsRepository;
 public class JdbcRunner {
     public static void main(String[] args) {
         Repository<Ticket> repository = new TicketsRepository();
-        repository.findAll().forEach(System.out::println);
+//        repository.findAll().forEach(System.out::println);
+//        System.out.println(repository.findById("0005432001516"));
     }
 }
