@@ -39,6 +39,7 @@ public class TicketMapper implements Mapper<Ticket> {
                 entity.getTicketNo(),
                 entity.getBookRef(),
                 entity.getPassengerId(),
+                entity.getPassengerName(),
                 objectMapper.writeValueAsString(entity.getContactData())
         );
     }

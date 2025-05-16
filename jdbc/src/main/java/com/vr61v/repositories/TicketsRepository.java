@@ -18,6 +18,23 @@ public class TicketsRepository implements Repository<Ticket> {
     private final TicketMapper mapper = new TicketMapper();
 
     @Override
+    public boolean add(Ticket ticket) {
+        try (Connection connection = ConnectionManager.open()) {
+            List<String> values = mapper.mapToColumns(ticket);
+            String sql = String.format(
+                    "INSERT INTO %s VALUES ('%s', '%s', '%s', '%s', '%s')",
+                    table,
+                    values.get(0), values.get(1), values.get(2), values.get(3), values.get(4));
+            Statement statement = connection.createStatement();
+
+            int result = statement.executeUpdate(sql);
+            return result > 0;
+        } catch (SQLException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public List<Ticket> findAll() {
         try (Connection connection = ConnectionManager.open()) {
             String query = String.format("SELECT * FROM %s", table);
