@@ -37,25 +37,6 @@ public class TicketsRepository implements Repository<Ticket> {
     }
 
     @Override
-    public List<Ticket> findAll() {
-        try (Connection connection = ConnectionManager.open()) {
-            PreparedStatement statement = connection.prepareStatement(
-                    String.format("SELECT * FROM %s", table)
-            );
-
-            ResultSet result = statement.executeQuery();
-            List<Ticket> tickets = new ArrayList<>();
-            while (result.next()) {
-                tickets.add(mapper.mapToEntity(result));
-            }
-
-            return tickets;
-        } catch (SQLException | JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public Ticket findById(String id) {
         try (Connection connection = ConnectionManager.open()) {
             PreparedStatement statement = connection.prepareStatement(
@@ -67,6 +48,46 @@ public class TicketsRepository implements Repository<Ticket> {
             ResultSet result = statement.executeQuery();
 
             return mapper.mapToEntity(result);
+        } catch (SQLException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Ticket> findAll() {
+        try (Connection connection = ConnectionManager.open()) {
+            PreparedStatement statement = connection.prepareStatement(
+                    String.format("SELECT * FROM %s", table)
+            );
+
+            ResultSet result = statement.executeQuery();
+            List<Ticket> tickets = new ArrayList<>();
+            while (!result.isLast()) {
+                tickets.add(mapper.mapToEntity(result));
+            }
+
+            return tickets;
+        } catch (SQLException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Ticket> findPage(int page, int size) {
+        try (Connection connection = ConnectionManager.open()) {
+            PreparedStatement statement = connection.prepareStatement(
+                    String.format("SELECT * FROM %s ORDER BY ticket_no LIMIT ? OFFSET ?", table)
+            );
+            statement.setInt(1, size);
+            statement.setInt(2, page * (size + 1));
+
+            ResultSet result = statement.executeQuery();
+            List<Ticket> tickets = new ArrayList<>();
+            while (!result.isLast()) {
+                tickets.add(mapper.mapToEntity(result));
+            }
+
+            return tickets;
         } catch (SQLException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }

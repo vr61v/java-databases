@@ -6,9 +6,11 @@ public interface Repository<T> {
 
     boolean add(T t);
 
+    T findById(String id);
+
     List<T> findAll();
 
-    T findById(String id);
+    List<T> findPage(int page, int size);
 
     boolean update(T t);
 
