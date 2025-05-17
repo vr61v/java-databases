@@ -6,9 +6,9 @@ import com.vr61v.entities.mappers.TicketMapper;
 import com.vr61v.utils.ConnectionManager;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,14 +20,16 @@ public class TicketsRepository implements Repository<Ticket> {
     @Override
     public boolean add(Ticket ticket) {
         try (Connection connection = ConnectionManager.open()) {
-            List<String> values = mapper.mapToColumns(ticket);
-            String sql = String.format(
-                    "INSERT INTO %s VALUES ('%s', '%s', '%s', '%s', '%s')",
-                    table,
-                    values.get(0), values.get(1), values.get(2), values.get(3), values.get(4));
-            Statement statement = connection.createStatement();
+            PreparedStatement statement = connection.prepareStatement(
+                    String.format("INSERT INTO %s VALUES (?, ?, ?, ?, (to_json(?::json)))", table)
+            );
 
-            int result = statement.executeUpdate(sql);
+            int i = 0;
+            for (String value : mapper.mapToColumns(ticket)) {
+                statement.setString(++i, value);
+            }
+
+            int result = statement.executeUpdate();
             return result > 0;
         } catch (SQLException | JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -37,10 +39,11 @@ public class TicketsRepository implements Repository<Ticket> {
     @Override
     public List<Ticket> findAll() {
         try (Connection connection = ConnectionManager.open()) {
-            String query = String.format("SELECT * FROM %s", table);
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(query);
+            PreparedStatement statement = connection.prepareStatement(
+                    String.format("SELECT * FROM %s", table)
+            );
 
+            ResultSet result = statement.executeQuery();
             List<Ticket> tickets = new ArrayList<>();
             while (result.next()) {
                 tickets.add(mapper.mapToEntity(result));
@@ -55,9 +58,13 @@ public class TicketsRepository implements Repository<Ticket> {
     @Override
     public Ticket findById(String id) {
         try (Connection connection = ConnectionManager.open()) {
-            String query = String.format("SELECT * FROM %s WHERE ticket_no = '%s'", table, id);
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(query);
+            PreparedStatement statement = connection.prepareStatement(
+                    String.format("SELECT * FROM %s WHERE ticket_no = ?", table)
+            );
+
+            statement.setString(1, id);
+
+            ResultSet result = statement.executeQuery();
 
             return mapper.mapToEntity(result);
         } catch (SQLException | JsonProcessingException e) {
@@ -69,23 +76,47 @@ public class TicketsRepository implements Repository<Ticket> {
     public boolean update(Ticket ticket) {
         try (Connection connection = ConnectionManager.open()) {
             List<String> values = mapper.mapToColumns(ticket);
-            String sql = String.format(
-                    """
-                    UPDATE %s
-                    SET
-                        book_ref = '%s',
-                        passenger_id = '%s',
-                        passenger_name = '%s',
-                        contact_data = '%s'
-                    WHERE ticket_no = '%s'
-                    """,
-                    table,
-                    values.get(1), values.get(2), values.get(3), values.get(4), values.get(0));
-            Statement statement = connection.createStatement();
+            PreparedStatement statement = connection.prepareStatement(
+                    String.format(
+                            """
+                            UPDATE %s
+                            SET
+                                book_ref = ?,
+                                passenger_id = ?,
+                                passenger_name = ?,
+                                contact_data = (to_json(?::json))
+                            WHERE ticket_no = ?
+                            """,
+                            table
+                    )
+            );
 
-            int result = statement.executeUpdate(sql);
+            for (int i = 1; i < values.size(); ++i) {
+                statement.setString(i, values.get(i));
+            }
+            statement.setString(values.size(), values.get(0));
+
+            int result = statement.executeUpdate();
+
             return result > 0;
         } catch (SQLException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean delete(String id) {
+        try (Connection connection = ConnectionManager.open()) {
+            PreparedStatement statement = connection.prepareStatement(
+                    String.format("DELETE FROM %s WHERE ticket_no = ?", table)
+            );
+
+            statement.setString(1, id);
+
+            int result = statement.executeUpdate();
+
+            return result > 0;
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }

@@ -12,4 +12,6 @@ public interface Repository<T> {
 
     boolean update(T t);
 
+    boolean delete(String id);
+
 }
