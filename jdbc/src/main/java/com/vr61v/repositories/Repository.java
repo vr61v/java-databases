@@ -10,4 +10,6 @@ public interface Repository<T> {
 
     T findById(String id);
 
+    boolean update(T t);
+
 }

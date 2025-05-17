@@ -64,4 +64,29 @@ public class TicketsRepository implements Repository<Ticket> {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public boolean update(Ticket ticket) {
+        try (Connection connection = ConnectionManager.open()) {
+            List<String> values = mapper.mapToColumns(ticket);
+            String sql = String.format(
+                    """
+                    UPDATE %s
+                    SET
+                        book_ref = '%s',
+                        passenger_id = '%s',
+                        passenger_name = '%s',
+                        contact_data = '%s'
+                    WHERE ticket_no = '%s'
+                    """,
+                    table,
+                    values.get(1), values.get(2), values.get(3), values.get(4), values.get(0));
+            Statement statement = connection.createStatement();
+
+            int result = statement.executeUpdate(sql);
+            return result > 0;
+        } catch (SQLException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
