@@ -14,6 +14,8 @@ public interface Repository<T> {
 
     boolean update(T t);
 
+    boolean updateAll(List<T> t);
+
     boolean delete(String id);
 
 }
