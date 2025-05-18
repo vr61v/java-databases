@@ -3,6 +3,7 @@ package com.vr61v.repositories;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vr61v.entities.Ticket;
 import com.vr61v.entities.mappers.TicketMapper;
+import com.vr61v.exceptions.RepositoryException;
 import com.vr61v.utils.ConnectionManager;
 
 import java.sql.Connection;
@@ -48,7 +49,7 @@ public class TicketsRepository implements Repository<Ticket> {
             int result = statement.executeUpdate();
             return result > 0;
         } catch (SQLException | JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e.getMessage());
         }
     }
 
@@ -63,7 +64,7 @@ public class TicketsRepository implements Repository<Ticket> {
 
             return mapper.mapToEntity(result);
         } catch (SQLException | JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e.getMessage());
         }
     }
 
@@ -80,7 +81,7 @@ public class TicketsRepository implements Repository<Ticket> {
 
             return tickets;
         } catch (SQLException | JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e.getMessage());
         }
     }
 
@@ -99,7 +100,7 @@ public class TicketsRepository implements Repository<Ticket> {
 
             return tickets;
         } catch (SQLException | JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e.getMessage());
         }
     }
 
@@ -118,7 +119,7 @@ public class TicketsRepository implements Repository<Ticket> {
 
             return result > 0;
         } catch (SQLException | JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e.getMessage());
         }
     }
 
@@ -144,7 +145,7 @@ public class TicketsRepository implements Repository<Ticket> {
 
             return !statement.execute();
         } catch (SQLException | JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e.getMessage());
         }
     }
 
@@ -159,7 +160,7 @@ public class TicketsRepository implements Repository<Ticket> {
 
             return result > 0;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e.getMessage());
         }
     }
 }
