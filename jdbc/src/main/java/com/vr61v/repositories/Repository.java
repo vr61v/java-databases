@@ -20,4 +20,6 @@ public interface Repository<T> {
 
     boolean delete(String id);
 
+    boolean deleteAll(List<String> ids);
+
 }

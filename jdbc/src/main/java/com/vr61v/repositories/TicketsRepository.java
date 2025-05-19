@@ -188,4 +188,24 @@ public class TicketsRepository implements Repository<Ticket> {
             throw new RepositoryException(e.getMessage());
         }
     }
+
+    @Override
+    public boolean deleteAll(List<String> ids) {
+        try (Connection connection = ConnectionManager.open()) {
+            StringBuilder query = new StringBuilder();
+            query.append("BEGIN;")
+                    .append(DELETE_QUERY.repeat(ids.size()))
+                    .append("END;");
+
+            PreparedStatement statement = connection.prepareStatement(query.toString());
+            int index = 0;
+            for (String id : ids) {
+                statement.setString(++index, id);
+            }
+
+            return !statement.execute();
+        } catch (SQLException e) {
+            throw new RepositoryException(e.getMessage());
+        }
+    }
 }

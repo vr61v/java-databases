@@ -79,9 +79,9 @@ public class JdbcRunner {
         );
 
         System.out.println(repository.addAll(List.of(add1, add2, add3)));
-        System.out.println("=".repeat(150));
 
 
+//        System.out.println("=".repeat(150));
 //        System.out.println("BEFORE UPDATE");
 //        System.out.println(repository.findById("1111111111111"));
 //        System.out.println(repository.findById("1111111111112"));
@@ -131,9 +131,9 @@ public class JdbcRunner {
 //        System.out.println(repository.findById("1111111111113"));
 //        System.out.println("=".repeat(200));
 
+        System.out.println("=".repeat(150));
         System.out.println("DELETING TICKETS");
-        System.out.println(repository.delete("1111111111111"));
-        System.out.println(repository.delete("1111111111112"));
-        System.out.println(repository.delete("1111111111113"));
+        System.out.println(repository.deleteAll(List.of("1111111111111", "1111111111112", "1111111111113")));
+
     }
 }
