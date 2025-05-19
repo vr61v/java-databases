@@ -44,7 +44,6 @@ public class JdbcRunner {
 
         System.out.println("=".repeat(150));
         System.out.println("CREATING TICKETS");
-
         Ticket add1 = new Ticket(
                 "1111111111111",
                 "5D4169",
@@ -55,7 +54,6 @@ public class JdbcRunner {
                         "a.moiseev_1977@postgrespro.ru"
                 )
         );
-
         Ticket add2 = new Ticket(
                 "1111111111112",
                 "5D4169",
@@ -66,7 +64,6 @@ public class JdbcRunner {
                         "a.moiseev_1977@postgrespro.ru"
                 )
         );
-
         Ticket add3 = new Ticket(
                 "1111111111113",
                 "5D4169",
@@ -77,63 +74,55 @@ public class JdbcRunner {
                         "a.moiseev_1977@postgrespro.ru"
                 )
         );
-
         System.out.println(repository.addAll(List.of(add1, add2, add3)));
 
+        System.out.println("=".repeat(150));
+        System.out.println("BEFORE UPDATE");
+        repository.findAllById(List.of("1111111111111", "1111111111112", "1111111111113"))
+                .forEach(System.out::println);
 
-//        System.out.println("=".repeat(150));
-//        System.out.println("BEFORE UPDATE");
-//        System.out.println(repository.findById("1111111111111"));
-//        System.out.println(repository.findById("1111111111112"));
-//        System.out.println(repository.findById("1111111111113"));
-//        System.out.println("=".repeat(200));
-//
-//        Ticket update1 = new Ticket(
-//                "1111111111111",
-//                "5D4169",
-//                "1234 123456",
-//                "SOMETHING NAME1",
-//                new ContactData(
-//                        "+79999999991",
-//                        "needupdate1@postgrespro.ru"
-//                )
-//        );
-//
-//        Ticket update2 = new Ticket(
-//                "1111111111112",
-//                "5D4169",
-//                "4321 654321",
-//                "SOMETHING NAME2",
-//                new ContactData(
-//                        "+79999999992",
-//                        "needupdate2@postgrespro.ru"
-//                )
-//        );
-//
-//        Ticket update3 = new Ticket(
-//                "1111111111113",
-//                "000000", // invalid
-//                "1234 123456",
-//                "SOMETHING NAME3",
-//                new ContactData(
-//                        "+79999999993",
-//                        "needupdate3@postgrespro.ru"
-//                )
-//        );
-//        System.out.println("UPDATING TICKETS");
-//        List<Ticket> tickets = List.of(update1, update2, update3);
-//        System.out.println(repository.updateAll(tickets));
-//        System.out.println("=".repeat(200));
-//
-//        System.out.println("AFTER UPDATE");
-//        System.out.println(repository.findById("1111111111111"));
-//        System.out.println(repository.findById("1111111111112"));
-//        System.out.println(repository.findById("1111111111113"));
-//        System.out.println("=".repeat(200));
+        System.out.println("=".repeat(150));
+        Ticket update1 = new Ticket(
+                "1111111111111",
+                "5D4169",
+                "1234 123456",
+                "SOMETHING NAME1",
+                new ContactData(
+                        "+79999999991",
+                        "needupdate1@postgrespro.ru"
+                )
+        );
+        Ticket update2 = new Ticket(
+                "1111111111112",
+                "5D4169",
+                "4321 654321",
+                "SOMETHING NAME2",
+                new ContactData(
+                        "+79999999992",
+                        "needupdate2@postgrespro.ru"
+                )
+        );
+        Ticket update3 = new Ticket(
+                "1111111111113",
+                "5D4169", // invalid
+                "1234 123456",
+                "SOMETHING NAME3",
+                new ContactData(
+                        "+79999999993",
+                        "needupdate3@postgrespro.ru"
+                )
+        );
+        System.out.println("UPDATING TICKETS");
+        System.out.println(repository.updateAll(List.of(update1, update2, update3)));
+
+        System.out.println("=".repeat(150));
+        System.out.println("AFTER UPDATE");
+        System.out.println(repository.findById("1111111111111"));
+        System.out.println(repository.findById("1111111111112"));
+        System.out.println(repository.findById("1111111111113"));
 
         System.out.println("=".repeat(150));
         System.out.println("DELETING TICKETS");
         System.out.println(repository.deleteAll(List.of("1111111111111", "1111111111112", "1111111111113")));
-
     }
 }

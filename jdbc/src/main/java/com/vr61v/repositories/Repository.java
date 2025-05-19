@@ -12,6 +12,8 @@ public interface Repository<T> {
 
     List<T> findAll();
 
+    List<T> findAllById(List<String> ids);
+
     List<T> findPage(int page, int size);
 
     boolean update(T t);

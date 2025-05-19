@@ -21,6 +21,7 @@ public class TicketsRepository implements Repository<Ticket> {
     private static final String ADD_QUERY = String.format("INSERT INTO %s VALUES (?, ?, ?, ?, (to_json(?::json)));", table);
     private static final String FIND_BY_ID_QUERY = String.format("SELECT * FROM %s WHERE ticket_no = ?;", table);
     private static final String FIND_ALL_QUERY = String.format("SELECT * FROM %s;", table);
+    private static final String FIND_ALL_BY_ID_QUERY = String.format("SELECT * FROM %s WHERE ticket_no IN ", table);
     private static final String FIND_PAGE_QUERY = String.format("SELECT * FROM %s ORDER BY ticket_no LIMIT ? OFFSET ?;", table);
     private static final String UPDATE_QUERY = String.format(
             """
@@ -97,6 +98,37 @@ public class TicketsRepository implements Repository<Ticket> {
     public List<Ticket> findAll() {
         try (Connection connection = ConnectionManager.open()) {
             PreparedStatement statement = connection.prepareStatement(FIND_ALL_QUERY);
+
+            ResultSet result = statement.executeQuery();
+            List<Ticket> tickets = new ArrayList<>();
+            while (!result.isLast()) {
+                tickets.add(mapper.mapToEntity(result));
+            }
+
+            return tickets;
+        } catch (SQLException | JsonProcessingException e) {
+            throw new RepositoryException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Ticket> findAllById(List<String> ids) {
+        try (Connection connection = ConnectionManager.open()) {
+            StringBuilder array = new StringBuilder("(");
+            for (int i = 0; i < ids.size(); ++i) {
+                if (i == ids.size() - 1) array.append("?);");
+                else array.append("? ,");
+            }
+
+            StringBuilder query = new StringBuilder();
+            query.append(FIND_ALL_BY_ID_QUERY)
+                    .append(array);
+
+            PreparedStatement statement = connection.prepareStatement(query.toString());
+            int index = 0;
+            for (String id : ids) {
+                statement.setString(++index, id);
+            }
 
             ResultSet result = statement.executeQuery();
             List<Ticket> tickets = new ArrayList<>();
