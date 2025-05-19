@@ -1,3 +1,13 @@
+/**
+ * Implementation of {@link Repository} interface for {@link Ticket} entities.
+ * Provides database operations for tickets using JDBC.
+ * Uses {@link TicketMapper} for mapping between database records and entity objects.
+ *
+ * @see Repository
+ * @see Ticket
+ * @see TicketMapper
+ */
+
 package com.vr61v.repositories;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,11 +28,50 @@ public class TicketsRepository implements Repository<Ticket> {
     private static final String table = "tickets";
     private static final TicketMapper mapper = new TicketMapper();
 
+    /**
+     * SQL query for inserting a new ticket record into the database.
+     * Inserts values for all columns: ticket_no, book_ref, passenger_id, passenger_name, contact_data.
+     * The contact_data field is converted from JSON string to PostgreSQL json type.
+     */
     private static final String ADD_QUERY = String.format("INSERT INTO %s VALUES (?, ?, ?, ?, (to_json(?::json)));", table);
+
+    /**
+     * SQL query for finding a ticket by its unique number.
+     * Selects all columns from the tickets table where ticket_no matches the parameter.
+     */
     private static final String FIND_BY_ID_QUERY = String.format("SELECT * FROM %s WHERE ticket_no = ?;", table);
+
+    /**
+     * SQL query for retrieving all tickets from the database.
+     * Selects all columns from all records in the tickets table.
+     */
     private static final String FIND_ALL_QUERY = String.format("SELECT * FROM %s;", table);
+
+    /**
+     * SQL query for finding multiple tickets by their numbers.
+     * Selects all columns from the tickets table where ticket_no is in the specified list.
+     * Note: The IN clause parameters need to be appended when building the query.
+     */
     private static final String FIND_ALL_BY_ID_QUERY = String.format("SELECT * FROM %s WHERE ticket_no IN ", table);
+
+    /**
+     * SQL query for paginated retrieval of tickets.
+     * Selects all columns from the tickets table with pagination support:
+     * - LIMIT controls the page size (number of records per page)
+     * - OFFSET skips the specified number of records
+     * Results are ordered by ticket_no for consistent pagination.
+     */
     private static final String FIND_PAGE_QUERY = String.format("SELECT * FROM %s ORDER BY ticket_no LIMIT ? OFFSET ?;", table);
+
+    /**
+     * SQL query for updating a ticket record.
+     * Updates all fields of a ticket except the primary key (ticket_no):
+     * - book_ref
+     * - passenger_id
+     * - passenger_name
+     * - contact_data (converted from JSON string to PostgreSQL json type)
+     * The WHERE clause ensures only the ticket with specified ticket_no is updated.
+     */
     private static final String UPDATE_QUERY = String.format(
             """
             UPDATE %s
@@ -35,8 +84,17 @@ public class TicketsRepository implements Repository<Ticket> {
             """,
             table
     );
+
+    /**
+     * SQL query for deleting a ticket by its number.
+     * Deletes the record from the tickets table where ticket_no matches the parameter.
+     */
     public static final String DELETE_QUERY = String.format("DELETE FROM %s WHERE ticket_no = ?;", table);
 
+    /**
+     * {@inheritDoc}
+     * @throws RepositoryException if there's an error during database operation or JSON processing
+     */
     @Override
     public boolean add(Ticket ticket) {
         try (Connection connection = ConnectionManager.open()) {
@@ -54,6 +112,10 @@ public class TicketsRepository implements Repository<Ticket> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws RepositoryException if there's an error during database operation or JSON processing
+     */
     @Override
     public boolean addAll(List<Ticket> t) {
         try (Connection connection = ConnectionManager.open()) {
@@ -82,6 +144,10 @@ public class TicketsRepository implements Repository<Ticket> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws RepositoryException if there's an error during database operation or JSON processing
+     */
     @Override
     public Ticket findById(String id) {
         try (Connection connection = ConnectionManager.open()) {
@@ -96,6 +162,10 @@ public class TicketsRepository implements Repository<Ticket> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws RepositoryException if there's an error during database operation or JSON processing
+     */
     @Override
     public List<Ticket> findAll() {
         try (Connection connection = ConnectionManager.open()) {
@@ -113,6 +183,10 @@ public class TicketsRepository implements Repository<Ticket> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws RepositoryException if there's an error during database operation or JSON processing
+     */
     @Override
     public List<Ticket> findAllById(List<String> ids) {
         try (Connection connection = ConnectionManager.open()) {
@@ -145,6 +219,10 @@ public class TicketsRepository implements Repository<Ticket> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws RepositoryException if there's an error during database operation or JSON processing
+     */
     @Override
     public List<Ticket> findPage(int page, int size) {
         try (Connection connection = ConnectionManager.open()) {
@@ -164,6 +242,10 @@ public class TicketsRepository implements Repository<Ticket> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws RepositoryException if there's an error during database operation or JSON processing
+     */
     @Override
     public boolean update(Ticket ticket) {
         try (Connection connection = ConnectionManager.open()) {
@@ -183,6 +265,10 @@ public class TicketsRepository implements Repository<Ticket> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws RepositoryException if there's an error during database operation or JSON processing
+     */
     @Override
     public boolean updateAll(List<Ticket> t) {
         try (Connection connection = ConnectionManager.open()) {
@@ -212,6 +298,10 @@ public class TicketsRepository implements Repository<Ticket> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws RepositoryException if there's an error during database operation
+     */
     @Override
     public boolean delete(String id) {
         try (Connection connection = ConnectionManager.open()) {
@@ -226,6 +316,10 @@ public class TicketsRepository implements Repository<Ticket> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws RepositoryException if there's an error during database operation
+     */
     @Override
     public boolean deleteAll(List<String> ids) {
         try (Connection connection = ConnectionManager.open()) {
