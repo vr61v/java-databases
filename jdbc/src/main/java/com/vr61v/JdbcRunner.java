@@ -11,39 +11,60 @@ public class JdbcRunner {
     public static void main(String[] args) {
         Repository<Ticket> repository = new TicketsRepository();
 
-//        Ticket add = new Ticket(
-//                "1111111111111",
-//                "5D4169",
-//                "5112 696349",
-//                "VIKTORIYA SMIRNOVA",
-//                new ContactData(
-//                        "+70013357481",
-//                        "a.moiseev_1977@postgrespro.ru"
-//                )
-//        );
-//
-//        Ticket update = new Ticket(
-//                "1111111111111",
-//                "5D4169",
-//                "1234 123456",
-//                "SOMETHING NAME",
-//                new ContactData(
-//                        "+70013357481",
-//                        "a.moiseev_1977@postgrespro.ru"
-//                )
-//        );
+        Ticket add = new Ticket(
+                "1111111111111",
+                "5D4169",
+                "5112 696349",
+                "VIKTORIYA SMIRNOVA",
+                new ContactData(
+                        "+70013357481",
+                        "a.moiseev_1977@postgrespro.ru"
+                )
+        );
 
-//        System.out.println(repository.add(add));
-//        System.out.println(repository.findAll().size());
-//        repository.findPage(0, 5).forEach(System.out::println);
-//        System.out.println(repository.findById("1111111111111"));
-//        System.out.println(repository.update(update));
-//        System.out.println(repository.findById("1111111111111"));
-//        System.out.println(repository.delete("1111111111111"));
+        Ticket update = new Ticket(
+                "1111111111111",
+                "5D4169",
+                "1234 123456",
+                "SOMETHING NAME",
+                new ContactData(
+                        "+70013357481",
+                        "a.moiseev_1977@postgrespro.ru"
+                )
+        );
 
 
-        System.out.println("=".repeat(150));
-        System.out.println("CREATING TICKETS");
+        System.out.println("=".repeat(200));
+        System.out.println("CREATING TICKET");
+        System.out.println(repository.add(add));
+
+        System.out.println("=".repeat(200));
+        System.out.println("FIND ALL TICKETS");
+        System.out.println(repository.findAll().size());
+
+        System.out.println("=".repeat(200));
+        System.out.println("FIND FIRST PAGE OF TICKETS");
+        repository.findPage(0, 5).forEach(System.out::println);
+
+        System.out.println("=".repeat(200));
+        System.out.println("FIND TICKET BY ID (BEFORE UPDATE)");
+        System.out.println(repository.findById("1111111111111"));
+
+        System.out.println("=".repeat(200));
+        System.out.println("UPDATING TICKET");
+        System.out.println(repository.update(update));
+
+        System.out.println("=".repeat(200));
+        System.out.println("FIND TICKET BY ID (AFTER UPDATE)");
+        System.out.println(repository.findById("1111111111111"));
+
+        System.out.println("=".repeat(200));
+        System.out.println("DELETE TICKET BY ID");
+        System.out.println(repository.delete("1111111111111"));
+
+
+        System.out.println("=".repeat(200));
+        System.out.println("CREATING TICKETS (MANY)");
         Ticket add1 = new Ticket(
                 "1111111111111",
                 "5D4169",
@@ -76,12 +97,12 @@ public class JdbcRunner {
         );
         System.out.println(repository.addAll(List.of(add1, add2, add3)));
 
-        System.out.println("=".repeat(150));
-        System.out.println("BEFORE UPDATE");
+        System.out.println("=".repeat(200));
+        System.out.println("FIND TICKETS BY ID (BEFORE UPDATE)");
         repository.findAllById(List.of("1111111111111", "1111111111112", "1111111111113"))
                 .forEach(System.out::println);
 
-        System.out.println("=".repeat(150));
+        System.out.println("=".repeat(200));
         Ticket update1 = new Ticket(
                 "1111111111111",
                 "5D4169",
@@ -115,14 +136,16 @@ public class JdbcRunner {
         System.out.println("UPDATING TICKETS");
         System.out.println(repository.updateAll(List.of(update1, update2, update3)));
 
-        System.out.println("=".repeat(150));
-        System.out.println("AFTER UPDATE");
-        System.out.println(repository.findById("1111111111111"));
-        System.out.println(repository.findById("1111111111112"));
-        System.out.println(repository.findById("1111111111113"));
+        System.out.println("=".repeat(200));
+        System.out.println("FIND TICKETS BY ID (AFTER UPDATE)");
+        repository.findAllById(List.of("1111111111111", "1111111111112", "1111111111113"))
+                .forEach(System.out::println);
 
-        System.out.println("=".repeat(150));
-        System.out.println("DELETING TICKETS");
-        System.out.println(repository.deleteAll(List.of("1111111111111", "1111111111112", "1111111111113")));
+        System.out.println("=".repeat(200));
+        System.out.println("DELETING TICKETS (MANY)");
+        System.out.println(repository.deleteAll(
+                List.of("1111111111111", "1111111111112", "1111111111113")
+        ));
+        System.out.println("=".repeat(200));
     }
 }
