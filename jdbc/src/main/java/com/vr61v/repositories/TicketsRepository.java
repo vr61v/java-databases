@@ -1,13 +1,3 @@
-/**
- * Implementation of {@link Repository} interface for {@link Ticket} entities.
- * Provides database operations for tickets using JDBC.
- * Uses {@link TicketMapper} for mapping between database records and entity objects.
- *
- * @see Repository
- * @see Ticket
- * @see TicketMapper
- */
-
 package com.vr61v.repositories;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,6 +13,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of {@link Repository} interface for {@link Ticket} entities.
+ * Provides database operations for tickets using JDBC.
+ * Uses {@link TicketMapper} for mapping between database records and entity objects.
+ *
+ * @see Repository
+ * @see Ticket
+ * @see TicketMapper
+ */
 public class TicketsRepository implements Repository<Ticket> {
 
     private static final String table = "tickets";

@@ -1,3 +1,7 @@
+package com.vr61v.repositories;
+
+import java.util.List;
+
 /**
  * Generic interface for repository operations on objects of type T.
  * Provides basic CRUD (Create, Read, Update, Delete) operations
@@ -5,11 +9,6 @@
  *
  * @param <T> the type of entities this repository manages
  */
-
-package com.vr61v.repositories;
-
-import java.util.List;
-
 public interface Repository<T> {
 
     /**
