@@ -2,7 +2,7 @@ package com.vr61v.repositories;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vr61v.entities.Ticket;
-import com.vr61v.entities.mappers.TicketMapper;
+import com.vr61v.mappers.TicketMapper;
 import com.vr61v.exceptions.RepositoryException;
 import com.vr61v.utils.ConnectionManager;
 

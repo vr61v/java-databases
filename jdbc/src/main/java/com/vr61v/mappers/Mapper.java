@@ -1,4 +1,4 @@
-package com.vr61v.entities.mappers;
+package com.vr61v.mappers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
