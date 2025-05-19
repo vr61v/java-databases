@@ -6,11 +6,9 @@ import com.vr61v.mappers.TicketMapper;
 import com.vr61v.exceptions.RepositoryException;
 import com.vr61v.utils.ConnectionManager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,7 +22,21 @@ import java.util.List;
  */
 public class TicketsRepository implements Repository<Ticket> {
 
-    private static final String table = "tickets";
+    private static volatile TicketsRepository instance;
+
+    public static TicketsRepository getInstance() {
+        TicketsRepository repository = instance;
+        if (repository == null) {
+            synchronized (TicketsRepository.class) {
+                repository = instance;
+                if (repository == null) {
+                    instance = repository = new TicketsRepository();
+                }
+            }
+        }
+        return repository;
+    }
+
     private static final TicketMapper mapper = new TicketMapper();
 
     /**
@@ -32,26 +44,40 @@ public class TicketsRepository implements Repository<Ticket> {
      * Inserts values for all columns: ticket_no, book_ref, passenger_id, passenger_name, contact_data.
      * The contact_data field is converted from JSON string to PostgreSQL json type.
      */
-    private static final String ADD_QUERY = String.format("INSERT INTO %s VALUES (?, ?, ?, ?, (to_json(?::json)));", table);
+    private static final String ADD_QUERY = """
+        INSERT INTO tickets
+        (ticket_no, book_ref, passenger_id, passenger_name, contact_data)
+        VALUES (?, ?, ?, ?, (to_json(?::json)));
+    """;
 
     /**
      * SQL query for finding a ticket by its unique number.
      * Selects all columns from the tickets table where ticket_no matches the parameter.
      */
-    private static final String FIND_BY_ID_QUERY = String.format("SELECT * FROM %s WHERE ticket_no = ?;", table);
+    private static final String FIND_BY_ID_QUERY = """
+        SELECT ticket_no, book_ref, passenger_id, passenger_name, contact_data
+        FROM tickets
+        WHERE ticket_no = ?;
+    """;
 
     /**
-     * SQL query for retrieving all tickets from the database.
+     * SQL query for finding all tickets from the database.
      * Selects all columns from all records in the tickets table.
      */
-    private static final String FIND_ALL_QUERY = String.format("SELECT * FROM %s;", table);
+    private static final String FIND_ALL_QUERY = """
+        SELECT ticket_no, book_ref, passenger_id, passenger_name, contact_data
+        FROM tickets
+    """;
 
     /**
      * SQL query for finding multiple tickets by their numbers.
      * Selects all columns from the tickets table where ticket_no is in the specified list.
-     * Note: The IN clause parameters need to be appended when building the query.
      */
-    private static final String FIND_ALL_BY_ID_QUERY = String.format("SELECT * FROM %s WHERE ticket_no IN ", table);
+    private static final String FIND_ALL_BY_ID_QUERY = """
+        SELECT ticket_no, book_ref, passenger_id, passenger_name, contact_data
+        FROM tickets
+        WHERE ticket_no = ANY (?);
+    """;
 
     /**
      * SQL query for paginated retrieval of tickets.
@@ -60,7 +86,13 @@ public class TicketsRepository implements Repository<Ticket> {
      * - OFFSET skips the specified number of records
      * Results are ordered by ticket_no for consistent pagination.
      */
-    private static final String FIND_PAGE_QUERY = String.format("SELECT * FROM %s ORDER BY ticket_no LIMIT ? OFFSET ?;", table);
+    private static final String FIND_PAGE_QUERY = """
+        SELECT ticket_no, book_ref, passenger_id, passenger_name, contact_data
+        FROM tickets
+        ORDER BY ticket_no
+        LIMIT ?
+        OFFSET ?;
+    """;
 
     /**
      * SQL query for updating a ticket record.
@@ -71,24 +103,20 @@ public class TicketsRepository implements Repository<Ticket> {
      * - contact_data (converted from JSON string to PostgreSQL json type)
      * The WHERE clause ensures only the ticket with specified ticket_no is updated.
      */
-    private static final String UPDATE_QUERY = String.format(
-            """
-            UPDATE %s
-            SET
-               book_ref = ?,
-                passenger_id = ?,
-                passenger_name = ?,
-                contact_data = (to_json(?::json))
-            WHERE ticket_no = ?;
-            """,
-            table
-    );
+    private static final String UPDATE_QUERY = """
+        UPDATE tickets
+        SET book_ref = ?, passenger_id = ?, passenger_name = ?, contact_data = (to_json(?::json))
+        WHERE ticket_no = ?;
+    """;
 
     /**
      * SQL query for deleting a ticket by its number.
      * Deletes the record from the tickets table where ticket_no matches the parameter.
      */
-    public static final String DELETE_QUERY = String.format("DELETE FROM %s WHERE ticket_no = ?;", table);
+    public static final String DELETE_QUERY = """
+        DELETE FROM tickets
+        WHERE ticket_no = ?;
+    """;
 
     /**
      * {@inheritDoc}
@@ -96,9 +124,8 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean add(Ticket ticket) {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(ADD_QUERY);
-
+        try (Connection connection = ConnectionManager.getConnection();
+                PreparedStatement statement = connection.prepareStatement(ADD_QUERY)) {
             int i = 0;
             for (String value : mapper.mapToColumns(ticket)) {
                 statement.setString(++i, value);
@@ -117,19 +144,22 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean addAll(List<Ticket> t) {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            List<List<String>> valuesList = new ArrayList<>();
-            for (Ticket ticket : t) {
+        List<List<String>> valuesList = new ArrayList<>();
+        for (Ticket ticket : t) {
+            try {
                 valuesList.add(mapper.mapToColumns(ticket));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             }
+        }
 
-            StringBuilder query = new StringBuilder();
-            query.append("BEGIN;")
-                    .append(ADD_QUERY.repeat(valuesList.size()))
-                    .append("END;");
+        StringBuilder query = new StringBuilder();
+        query.append("BEGIN;")
+                .append(ADD_QUERY.repeat(valuesList.size()))
+                .append("END;");
 
-            PreparedStatement statement = connection.prepareStatement(query.toString());
-
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query.toString())) {
             int index = 0;
             for (List<String> values : valuesList) {
                 for (String value : values) {
@@ -138,7 +168,7 @@ public class TicketsRepository implements Repository<Ticket> {
             }
 
             return !statement.execute();
-        } catch (SQLException | JsonProcessingException e) {
+        } catch (SQLException e) {
             throw new RepositoryException(e.getMessage());
         }
     }
@@ -149,8 +179,8 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public Ticket findById(String id) {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_QUERY);
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_QUERY)) {
             statement.setString(1, id);
 
             ResultSet result = statement.executeQuery();
@@ -167,9 +197,8 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public List<Ticket> findAll() {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(FIND_ALL_QUERY);
-
+        try (Connection connection = ConnectionManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement(FIND_ALL_QUERY)) {
             ResultSet result = statement.executeQuery();
             List<Ticket> tickets = new ArrayList<>();
             while (!result.isLast()) {
@@ -188,23 +217,11 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public List<Ticket> findAllById(List<String> ids) {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            StringBuilder array = new StringBuilder("(");
-            for (int i = 0; i < ids.size(); ++i) {
-                if (i == ids.size() - 1) array.append("?);");
-                else array.append("? ,");
-            }
+        try (Connection connection = ConnectionManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement(FIND_ALL_BY_ID_QUERY)) {
 
-            StringBuilder query = new StringBuilder();
-            query.append(FIND_ALL_BY_ID_QUERY)
-                    .append(array);
-
-            PreparedStatement statement = connection.prepareStatement(query.toString());
-
-            int index = 0;
-            for (String id : ids) {
-                statement.setString(++index, id);
-            }
+            Array sqlArray = connection.createArrayOf("VARCHAR", ids.toArray());
+            statement.setArray(1, sqlArray);
 
             ResultSet result = statement.executeQuery();
             List<Ticket> tickets = new ArrayList<>();
@@ -224,8 +241,8 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public List<Ticket> findPage(int page, int size) {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(FIND_PAGE_QUERY);
+        try (Connection connection = ConnectionManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement(FIND_PAGE_QUERY);) {
             statement.setInt(1, size);
             statement.setInt(2, page * (size + 1));
 
@@ -247,10 +264,9 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean update(Ticket ticket) {
-        try (Connection connection = ConnectionManager.getConnection()) {
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);) {
             List<String> values = mapper.mapToColumns(ticket);
-
-            PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);
             statement.setString(values.size(), values.get(0));
             for (int i = 1; i < values.size(); ++i) {
                 statement.setString(i, values.get(i));
@@ -270,19 +286,21 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean updateAll(List<Ticket> t) {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            List<List<String>> valuesList = new ArrayList<>();
-            for (Ticket ticket : t) {
+        List<List<String>> valuesList = new ArrayList<>();
+        for (Ticket ticket : t) {
+            try {
                 valuesList.add(mapper.mapToColumns(ticket));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             }
+        }
 
-            StringBuilder query = new StringBuilder();
-            query.append("BEGIN;")
-                    .append(UPDATE_QUERY.repeat(valuesList.size()))
-                    .append("END;");
-
-            PreparedStatement statement = connection.prepareStatement(query.toString());
-
+        StringBuilder query = new StringBuilder();
+        query.append("BEGIN;")
+                .append(UPDATE_QUERY.repeat(valuesList.size()))
+                .append("END;");
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query.toString());) {
             int index = 0;
             for (List<String> values : valuesList) {
                 for (int i = 1; i < values.size(); ++i) {
@@ -292,7 +310,7 @@ public class TicketsRepository implements Repository<Ticket> {
             }
 
             return !statement.execute();
-        } catch (SQLException | JsonProcessingException e) {
+        } catch (SQLException e) {
             throw new RepositoryException(e.getMessage());
         }
     }
@@ -303,8 +321,8 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean delete(String id) {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);) {
             statement.setString(1, id);
 
             int result = statement.executeUpdate();
@@ -321,14 +339,12 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean deleteAll(List<String> ids) {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            StringBuilder query = new StringBuilder();
-            query.append("BEGIN;")
-                    .append(DELETE_QUERY.repeat(ids.size()))
-                    .append("END;");
-
-            PreparedStatement statement = connection.prepareStatement(query.toString());
-
+        StringBuilder query = new StringBuilder();
+        query.append("BEGIN;")
+                .append(DELETE_QUERY.repeat(ids.size()))
+                .append("END;");
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query.toString());) {
             int index = 0;
             for (String id : ids) {
                 statement.setString(++index, id);

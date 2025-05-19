@@ -9,7 +9,7 @@ import java.util.List;
 
 public class JdbcRunner {
     public static void main(String[] args) {
-        Repository<Ticket> repository = new TicketsRepository();
+        Repository<Ticket> repository = TicketsRepository.getInstance();
 
         Ticket add = new Ticket(
                 "1111111111111",
