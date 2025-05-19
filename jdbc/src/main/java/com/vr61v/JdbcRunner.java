@@ -2,6 +2,7 @@ package com.vr61v;
 
 import com.vr61v.entities.ContactData;
 import com.vr61v.entities.Ticket;
+import com.vr61v.filters.TicketFilter;
 import com.vr61v.repositories.Repository;
 import com.vr61v.repositories.TicketsRepository;
 
@@ -32,7 +33,6 @@ public class JdbcRunner {
                         "a.moiseev_1977@postgrespro.ru"
                 )
         );
-
 
         System.out.println("=".repeat(200));
         System.out.println("CREATING TICKET");
@@ -125,7 +125,7 @@ public class JdbcRunner {
         );
         Ticket update3 = new Ticket(
                 "1111111111113",
-                "5D4169", // invalid
+                "5D4169",
                 "1234 123456",
                 "SOMETHING NAME3",
                 new ContactData(

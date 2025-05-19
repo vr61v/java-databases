@@ -2,6 +2,7 @@ package com.vr61v.repositories;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vr61v.entities.Ticket;
+import com.vr61v.filters.Filter;
 import com.vr61v.mappers.TicketMapper;
 import com.vr61v.exceptions.RepositoryException;
 import com.vr61v.utils.ConnectionManager;
@@ -9,6 +10,9 @@ import com.vr61v.utils.ConnectionManager;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link Repository} interface for {@link Ticket} entities.
@@ -22,6 +26,7 @@ import java.util.List;
 public class TicketsRepository implements Repository<Ticket> {
 
     private static volatile TicketsRepository instance;
+    private static final TicketMapper mapper = new TicketMapper();
 
     public static TicketsRepository getInstance() {
         TicketsRepository repository = instance;
@@ -35,8 +40,6 @@ public class TicketsRepository implements Repository<Ticket> {
         }
         return repository;
     }
-
-    private static final TicketMapper mapper = new TicketMapper();
 
     /**
      * SQL query for inserting a new ticket record into the database.
@@ -133,9 +136,9 @@ public class TicketsRepository implements Repository<Ticket> {
              PreparedStatement statement = connection
                      .prepareStatement(ADD_QUERY)
         ) {
-            int i = 0;
-            for (String value : mapper.mapToColumns(ticket)) {
-                statement.setString(++i, value);
+            List<String> values = mapper.mapToColumns(ticket);
+            for (int i = 0; i < values.size(); ++i) {
+                statement.setString(i + 1, values.get(i));
             }
 
             int result = statement.executeUpdate();
@@ -182,7 +185,7 @@ public class TicketsRepository implements Repository<Ticket> {
      * @throws RepositoryException if there's an error during database operation or JSON processing
      */
     @Override
-    public Ticket findById(String id) {
+    public Optional<Ticket> findById(String id) {
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection
                      .prepareStatement(FIND_BY_ID_QUERY)
@@ -190,8 +193,10 @@ public class TicketsRepository implements Repository<Ticket> {
             statement.setString(1, id);
 
             ResultSet result = statement.executeQuery();
-
-            return mapper.mapToEntity(result);
+            if (result.next()) {
+                return Optional.ofNullable(mapper.mapToEntity(result));
+            }
+            return Optional.empty();
         } catch (SQLException | JsonProcessingException e) {
             throw new RepositoryException(e.getMessage());
         }
@@ -209,7 +214,39 @@ public class TicketsRepository implements Repository<Ticket> {
         ) {
             ResultSet result = statement.executeQuery();
             List<Ticket> tickets = new ArrayList<>();
-            while (!result.isLast()) {
+            while (result.next()) {
+                tickets.add(mapper.mapToEntity(result));
+            }
+
+            return tickets;
+        } catch (SQLException | JsonProcessingException e) {
+            throw new RepositoryException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Ticket> findAll(Filter filter) {
+        Map<String, Object> whereParameters = filter.toWhereParameters();
+        List<String> keys = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : whereParameters.entrySet()) {
+            keys.add(entry.getKey());
+            values.add(entry.getValue());
+        }
+
+        StringBuilder query = new StringBuilder(FIND_ALL_QUERY);
+        query.append(keys.stream().collect(Collectors.joining(" AND ", " WHERE ", ";")));
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection
+                     .prepareStatement(query.toString())
+        ) {
+            for (int i = 0; i < values.size(); ++i) {
+                statement.setObject(i + 1, values.get(i));
+            }
+
+            ResultSet result = statement.executeQuery();
+            List<Ticket> tickets = new ArrayList<>();
+            while (result.next()) {
                 tickets.add(mapper.mapToEntity(result));
             }
 
@@ -229,13 +266,14 @@ public class TicketsRepository implements Repository<Ticket> {
             PreparedStatement statement = connection
                     .prepareStatement(FIND_ALL_BY_ID_QUERY)
         ) {
-
-            Array sqlArray = connection.createArrayOf("VARCHAR", ids.toArray());
-            statement.setArray(1, sqlArray);
+            statement.setArray(
+                    1,
+                    connection.createArrayOf("VARCHAR", ids.toArray())
+            );
 
             ResultSet result = statement.executeQuery();
             List<Ticket> tickets = new ArrayList<>();
-            while (!result.isLast()) {
+            while (result.next()) {
                 tickets.add(mapper.mapToEntity(result));
             }
 
@@ -260,7 +298,7 @@ public class TicketsRepository implements Repository<Ticket> {
 
             ResultSet result = statement.executeQuery();
             List<Ticket> tickets = new ArrayList<>();
-            while (!result.isLast()) {
+            while (result.next()) {
                 tickets.add(mapper.mapToEntity(result));
             }
 

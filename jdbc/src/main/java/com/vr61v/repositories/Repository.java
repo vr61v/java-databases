@@ -1,6 +1,9 @@
 package com.vr61v.repositories;
 
+import com.vr61v.filters.Filter;
+
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Generic interface for repository operations on objects of type T.
@@ -33,7 +36,7 @@ public interface Repository<T> {
      * @param id the unique identifier of the entity
      * @return the found entity or null if not found
      */
-    T findById(String id);
+    Optional<T> findById(String id);
 
     /**
      * Retrieves all entities from the repository.
@@ -41,6 +44,13 @@ public interface Repository<T> {
      * @return list of all entities in the repository
      */
     List<T> findAll();
+
+    /**
+     * Retrieves all entities from the repository by entity filter.
+     *
+     * @return list of all entities in the repository for filter condition
+     */
+    List<T> findAll(Filter filter);
 
     /**
      * Finds all entities with the specified identifiers.

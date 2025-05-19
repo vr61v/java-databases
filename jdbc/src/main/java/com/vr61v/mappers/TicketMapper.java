@@ -41,7 +41,6 @@ public class TicketMapper implements Mapper<Ticket> {
      */
     @Override
     public Ticket mapToEntity(ResultSet result) throws SQLException, JsonProcessingException {
-        if (result.next()) {
             ContactData contactData = objectMapper.readValue(
                     result.getString("contact_data"),
                     ContactData.class
@@ -54,9 +53,6 @@ public class TicketMapper implements Mapper<Ticket> {
                     result.getString("passenger_name"),
                     contactData
             );
-        }
-
-        return null;
     }
 
     /**
