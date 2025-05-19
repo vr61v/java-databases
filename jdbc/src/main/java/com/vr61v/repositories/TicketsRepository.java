@@ -58,7 +58,9 @@ public class TicketsRepository implements Repository<Ticket> {
     public boolean addAll(List<Ticket> t) {
         try (Connection connection = ConnectionManager.open()) {
             List<List<String>> valuesList = new ArrayList<>();
-            for (Ticket ticket : t) valuesList.add(mapper.mapToColumns(ticket));
+            for (Ticket ticket : t) {
+                valuesList.add(mapper.mapToColumns(ticket));
+            }
 
             StringBuilder query = new StringBuilder();
             query.append("BEGIN;")
@@ -66,6 +68,7 @@ public class TicketsRepository implements Repository<Ticket> {
                     .append("END;");
 
             PreparedStatement statement = connection.prepareStatement(query.toString());
+
             int index = 0;
             for (List<String> values : valuesList) {
                 for (String value : values) {
@@ -83,7 +86,6 @@ public class TicketsRepository implements Repository<Ticket> {
     public Ticket findById(String id) {
         try (Connection connection = ConnectionManager.open()) {
             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_QUERY);
-
             statement.setString(1, id);
 
             ResultSet result = statement.executeQuery();
@@ -125,6 +127,7 @@ public class TicketsRepository implements Repository<Ticket> {
                     .append(array);
 
             PreparedStatement statement = connection.prepareStatement(query.toString());
+
             int index = 0;
             for (String id : ids) {
                 statement.setString(++index, id);
@@ -165,12 +168,12 @@ public class TicketsRepository implements Repository<Ticket> {
     public boolean update(Ticket ticket) {
         try (Connection connection = ConnectionManager.open()) {
             List<String> values = mapper.mapToColumns(ticket);
-            PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);
 
+            PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);
+            statement.setString(values.size(), values.get(0));
             for (int i = 1; i < values.size(); ++i) {
                 statement.setString(i, values.get(i));
             }
-            statement.setString(values.size(), values.get(0));
 
             int result = statement.executeUpdate();
 
@@ -184,7 +187,9 @@ public class TicketsRepository implements Repository<Ticket> {
     public boolean updateAll(List<Ticket> t) {
         try (Connection connection = ConnectionManager.open()) {
             List<List<String>> valuesList = new ArrayList<>();
-            for (Ticket ticket : t) valuesList.add(mapper.mapToColumns(ticket));
+            for (Ticket ticket : t) {
+                valuesList.add(mapper.mapToColumns(ticket));
+            }
 
             StringBuilder query = new StringBuilder();
             query.append("BEGIN;")
@@ -192,6 +197,7 @@ public class TicketsRepository implements Repository<Ticket> {
                     .append("END;");
 
             PreparedStatement statement = connection.prepareStatement(query.toString());
+
             int index = 0;
             for (List<String> values : valuesList) {
                 for (int i = 1; i < values.size(); ++i) {
@@ -210,7 +216,6 @@ public class TicketsRepository implements Repository<Ticket> {
     public boolean delete(String id) {
         try (Connection connection = ConnectionManager.open()) {
             PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);
-
             statement.setString(1, id);
 
             int result = statement.executeUpdate();
@@ -230,6 +235,7 @@ public class TicketsRepository implements Repository<Ticket> {
                     .append("END;");
 
             PreparedStatement statement = connection.prepareStatement(query.toString());
+
             int index = 0;
             for (String id : ids) {
                 statement.setString(++index, id);
