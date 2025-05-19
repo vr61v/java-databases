@@ -18,10 +18,10 @@ public class TicketsRepository implements Repository<Ticket> {
     private static final String table = "tickets";
     private static final TicketMapper mapper = new TicketMapper();
 
-    private static final String ADD_QUERY = String.format("INSERT INTO %s VALUES (?, ?, ?, ?, (to_json(?::json)))", table);
-    private static final String FIND_BY_ID_QUERY = String.format("SELECT * FROM %s WHERE ticket_no = ?", table);
-    private static final String FIND_ALL_QUERY = String.format("SELECT * FROM %s", table);
-    private static final String FIND_PAGE_QUERY = String.format("SELECT * FROM %s ORDER BY ticket_no LIMIT ? OFFSET ?", table);
+    private static final String ADD_QUERY = String.format("INSERT INTO %s VALUES (?, ?, ?, ?, (to_json(?::json)));", table);
+    private static final String FIND_BY_ID_QUERY = String.format("SELECT * FROM %s WHERE ticket_no = ?;", table);
+    private static final String FIND_ALL_QUERY = String.format("SELECT * FROM %s;", table);
+    private static final String FIND_PAGE_QUERY = String.format("SELECT * FROM %s ORDER BY ticket_no LIMIT ? OFFSET ?;", table);
     private static final String UPDATE_QUERY = String.format(
             """
             UPDATE %s
@@ -34,7 +34,7 @@ public class TicketsRepository implements Repository<Ticket> {
             """,
             table
     );
-    public static final String DELETE_QUERY = String.format("DELETE FROM %s WHERE ticket_no = ?", table);
+    public static final String DELETE_QUERY = String.format("DELETE FROM %s WHERE ticket_no = ?;", table);
 
     @Override
     public boolean add(Ticket ticket) {
@@ -48,6 +48,31 @@ public class TicketsRepository implements Repository<Ticket> {
 
             int result = statement.executeUpdate();
             return result > 0;
+        } catch (SQLException | JsonProcessingException e) {
+            throw new RepositoryException(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean addAll(List<Ticket> t) {
+        try (Connection connection = ConnectionManager.open()) {
+            List<List<String>> valuesList = new ArrayList<>();
+            for (Ticket ticket : t) valuesList.add(mapper.mapToColumns(ticket));
+
+            StringBuilder query = new StringBuilder();
+            query.append("BEGIN;")
+                    .append(ADD_QUERY.repeat(valuesList.size()))
+                    .append("END;");
+
+            PreparedStatement statement = connection.prepareStatement(query.toString());
+            int index = 0;
+            for (List<String> values : valuesList) {
+                for (String value : values) {
+                    statement.setString(++index, value);
+                }
+            }
+
+            return !statement.execute();
         } catch (SQLException | JsonProcessingException e) {
             throw new RepositoryException(e.getMessage());
         }

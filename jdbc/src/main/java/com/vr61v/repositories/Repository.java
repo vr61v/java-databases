@@ -6,6 +6,8 @@ public interface Repository<T> {
 
     boolean add(T t);
 
+    boolean addAll(List<T> t);
+
     T findById(String id);
 
     List<T> findAll();
