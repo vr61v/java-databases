@@ -96,7 +96,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean add(Ticket ticket) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(ADD_QUERY);
 
             int i = 0;
@@ -117,7 +117,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean addAll(List<Ticket> t) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.getConnection()) {
             List<List<String>> valuesList = new ArrayList<>();
             for (Ticket ticket : t) {
                 valuesList.add(mapper.mapToColumns(ticket));
@@ -149,7 +149,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public Ticket findById(String id) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_QUERY);
             statement.setString(1, id);
 
@@ -167,7 +167,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public List<Ticket> findAll() {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(FIND_ALL_QUERY);
 
             ResultSet result = statement.executeQuery();
@@ -188,7 +188,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public List<Ticket> findAllById(List<String> ids) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.getConnection()) {
             StringBuilder array = new StringBuilder("(");
             for (int i = 0; i < ids.size(); ++i) {
                 if (i == ids.size() - 1) array.append("?);");
@@ -224,7 +224,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public List<Ticket> findPage(int page, int size) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(FIND_PAGE_QUERY);
             statement.setInt(1, size);
             statement.setInt(2, page * (size + 1));
@@ -247,7 +247,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean update(Ticket ticket) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.getConnection()) {
             List<String> values = mapper.mapToColumns(ticket);
 
             PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY);
@@ -270,7 +270,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean updateAll(List<Ticket> t) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.getConnection()) {
             List<List<String>> valuesList = new ArrayList<>();
             for (Ticket ticket : t) {
                 valuesList.add(mapper.mapToColumns(ticket));
@@ -303,7 +303,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean delete(String id) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);
             statement.setString(1, id);
 
@@ -321,7 +321,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean deleteAll(List<String> ids) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.getConnection()) {
             StringBuilder query = new StringBuilder();
             query.append("BEGIN;")
                     .append(DELETE_QUERY.repeat(ids.size()))
