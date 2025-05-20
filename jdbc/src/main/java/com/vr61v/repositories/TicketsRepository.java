@@ -121,9 +121,20 @@ public class TicketsRepository implements Repository<Ticket> {
     """;
 
     private String buildTransactionQuery(String query, int count) {
-        return "BEGIN;" +
-                query.repeat(count) +
-                "END;";
+        return "BEGIN;" + query.repeat(count) + "END;";
+    }
+
+    private List<List<String>> extractValuesList(List<Ticket> t) {
+        List<List<String>> valuesList = new ArrayList<>();
+        for (Ticket ticket : t) {
+            try {
+                valuesList.add(mapper.mapToColumns(ticket));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return valuesList;
     }
 
     /**
@@ -141,8 +152,7 @@ public class TicketsRepository implements Repository<Ticket> {
                 statement.setString(i + 1, values.get(i));
             }
 
-            int result = statement.executeUpdate();
-            return result > 0;
+            return statement.executeUpdate() > 0;
         } catch (SQLException | JsonProcessingException e) {
             throw new RepositoryException(e.getMessage());
         }
@@ -154,14 +164,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean addAll(List<Ticket> t) {
-        List<List<String>> valuesList = new ArrayList<>();
-        for (Ticket ticket : t) {
-            try {
-                valuesList.add(mapper.mapToColumns(ticket));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        List<List<String>> valuesList = extractValuesList(t);
 
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection
@@ -193,10 +196,10 @@ public class TicketsRepository implements Repository<Ticket> {
             statement.setString(1, id);
 
             ResultSet result = statement.executeQuery();
-            if (result.next()) {
-                return Optional.ofNullable(mapper.mapToEntity(result));
-            }
-            return Optional.empty();
+
+            return result.next() ?
+                    Optional.ofNullable(mapper.mapToEntity(result)) :
+                    Optional.empty();
         } catch (SQLException | JsonProcessingException e) {
             throw new RepositoryException(e.getMessage());
         }
@@ -234,11 +237,13 @@ public class TicketsRepository implements Repository<Ticket> {
             values.add(entry.getValue());
         }
 
-        StringBuilder query = new StringBuilder(FIND_ALL_QUERY);
-        query.append(keys.stream().collect(Collectors.joining(" AND ", " WHERE ", ";")));
+        String query = FIND_ALL_QUERY +
+                keys.stream().collect(
+                        Collectors.joining(" AND ", " WHERE ", ";")
+                );
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection
-                     .prepareStatement(query.toString())
+                     .prepareStatement(query)
         ) {
             for (int i = 0; i < values.size(); ++i) {
                 statement.setObject(i + 1, values.get(i));
@@ -324,9 +329,7 @@ public class TicketsRepository implements Repository<Ticket> {
                 statement.setString(i, values.get(i));
             }
 
-            int result = statement.executeUpdate();
-
-            return result > 0;
+            return statement.executeUpdate() > 0;
         } catch (SQLException | JsonProcessingException e) {
             throw new RepositoryException(e.getMessage());
         }
@@ -338,14 +341,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean updateAll(List<Ticket> t) {
-        List<List<String>> valuesList = new ArrayList<>();
-        for (Ticket ticket : t) {
-            try {
-                valuesList.add(mapper.mapToColumns(ticket));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        List<List<String>> valuesList = extractValuesList(t);
 
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection
@@ -377,9 +373,7 @@ public class TicketsRepository implements Repository<Ticket> {
         ) {
             statement.setString(1, id);
 
-            int result = statement.executeUpdate();
-
-            return result > 0;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RepositoryException(e.getMessage());
         }
@@ -395,9 +389,8 @@ public class TicketsRepository implements Repository<Ticket> {
              PreparedStatement statement = connection
                      .prepareStatement(buildTransactionQuery(DELETE_QUERY, ids.size()))
         ) {
-            int index = 0;
-            for (String id : ids) {
-                statement.setString(++index, id);
+            for (int i = 0; i < ids.size(); ++i) {
+                statement.setString(i + 1, ids.get(i));
             }
 
             return !statement.execute();

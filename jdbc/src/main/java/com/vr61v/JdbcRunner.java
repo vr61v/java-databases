@@ -2,7 +2,6 @@ package com.vr61v;
 
 import com.vr61v.entities.ContactData;
 import com.vr61v.entities.Ticket;
-import com.vr61v.filters.TicketFilter;
 import com.vr61v.repositories.Repository;
 import com.vr61v.repositories.TicketsRepository;
 
