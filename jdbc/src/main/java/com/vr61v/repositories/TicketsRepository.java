@@ -2,12 +2,15 @@ package com.vr61v.repositories;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vr61v.entities.Ticket;
+import com.vr61v.exceptions.RepositoryException;
 import com.vr61v.filters.Filter;
 import com.vr61v.mappers.TicketMapper;
-import com.vr61v.exceptions.RepositoryException;
 import com.vr61v.utils.ConnectionManager;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,20 +28,12 @@ import java.util.stream.Collectors;
  */
 public class TicketsRepository implements Repository<Ticket> {
 
-    private static volatile TicketsRepository instance;
+    private final ConnectionManager connectionManager;
+
     private static final TicketMapper mapper = new TicketMapper();
 
-    public static TicketsRepository getInstance() {
-        TicketsRepository repository = instance;
-        if (repository == null) {
-            synchronized (TicketsRepository.class) {
-                repository = instance;
-                if (repository == null) {
-                    instance = repository = new TicketsRepository();
-                }
-            }
-        }
-        return repository;
+    public TicketsRepository(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
     }
 
     /**
@@ -47,7 +42,7 @@ public class TicketsRepository implements Repository<Ticket> {
      * The contact_data field is converted from JSON string to Postgres json type.
      */
     private static final String ADD_QUERY = """
-        INSERT INTO tickets
+        INSERT INTO bookings.tickets
         (ticket_no, book_ref, passenger_id, passenger_name, contact_data)
         VALUES (?, ?, ?, ?, (to_json(?::json)));
     """;
@@ -58,7 +53,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     private static final String FIND_BY_ID_QUERY = """
         SELECT ticket_no, book_ref, passenger_id, passenger_name, contact_data
-        FROM tickets
+        FROM bookings.tickets
         WHERE ticket_no = ?;
     """;
 
@@ -68,7 +63,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     private static final String FIND_ALL_QUERY = """
         SELECT ticket_no, book_ref, passenger_id, passenger_name, contact_data
-        FROM tickets
+        FROM bookings.tickets
     """;
 
     /**
@@ -77,7 +72,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     private static final String FIND_ALL_BY_ID_QUERY = """
         SELECT ticket_no, book_ref, passenger_id, passenger_name, contact_data
-        FROM tickets
+        FROM bookings.tickets
         WHERE ticket_no = ANY (?);
     """;
 
@@ -90,7 +85,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     private static final String FIND_PAGE_QUERY = """
         SELECT ticket_no, book_ref, passenger_id, passenger_name, contact_data
-        FROM tickets
+        FROM bookings.tickets
         ORDER BY ticket_no
         LIMIT ?
         OFFSET ?;
@@ -106,7 +101,7 @@ public class TicketsRepository implements Repository<Ticket> {
      * The WHERE clause ensures only the ticket with specified ticket_no is updated.
      */
     private static final String UPDATE_QUERY = """
-        UPDATE tickets
+        UPDATE bookings.tickets
         SET book_ref = ?, passenger_id = ?, passenger_name = ?, contact_data = (to_json(?::json))
         WHERE ticket_no = ?;
     """;
@@ -116,7 +111,7 @@ public class TicketsRepository implements Repository<Ticket> {
      * Deletes the record from the tickets table where ticket_no matches the parameter.
      */
     public static final String DELETE_QUERY = """
-        DELETE FROM tickets
+        DELETE FROM bookings.tickets
         WHERE ticket_no = ?;
     """;
 
@@ -143,7 +138,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean add(Ticket ticket) {
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection
                      .prepareStatement(ADD_QUERY)
         ) {
@@ -166,7 +161,7 @@ public class TicketsRepository implements Repository<Ticket> {
     public boolean addAll(List<Ticket> t) {
         List<List<String>> valuesList = extractValuesList(t);
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection
                      .prepareStatement(buildTransactionQuery(ADD_QUERY, valuesList.size()))
         ) {
@@ -189,7 +184,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public Optional<Ticket> findById(String id) {
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection
                      .prepareStatement(FIND_BY_ID_QUERY)
         ) {
@@ -211,8 +206,8 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public List<Ticket> findAll() {
-        try (Connection connection = ConnectionManager.getConnection();
-            PreparedStatement statement = connection
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement statement = connection
                     .prepareStatement(FIND_ALL_QUERY)
         ) {
             ResultSet result = statement.executeQuery();
@@ -241,7 +236,7 @@ public class TicketsRepository implements Repository<Ticket> {
                 keys.stream().collect(
                         Collectors.joining(" AND ", " WHERE ", ";")
                 );
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection
                      .prepareStatement(query)
         ) {
@@ -267,8 +262,8 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public List<Ticket> findAllById(List<String> ids) {
-        try (Connection connection = ConnectionManager.getConnection();
-            PreparedStatement statement = connection
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement statement = connection
                     .prepareStatement(FIND_ALL_BY_ID_QUERY)
         ) {
             statement.setArray(
@@ -294,8 +289,8 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public List<Ticket> findPage(int page, int size) {
-        try (Connection connection = ConnectionManager.getConnection();
-            PreparedStatement statement = connection
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement statement = connection
                     .prepareStatement(FIND_PAGE_QUERY)
         ) {
             statement.setInt(1, size);
@@ -319,7 +314,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean update(Ticket ticket) {
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection
                      .prepareStatement(UPDATE_QUERY)
         ) {
@@ -343,7 +338,7 @@ public class TicketsRepository implements Repository<Ticket> {
     public boolean updateAll(List<Ticket> t) {
         List<List<String>> valuesList = extractValuesList(t);
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection
                      .prepareStatement(buildTransactionQuery(UPDATE_QUERY, valuesList.size()))
         ) {
@@ -367,7 +362,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean delete(String id) {
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection
                      .prepareStatement(DELETE_QUERY)
         ) {
@@ -385,7 +380,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean deleteAll(List<String> ids) {
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection
                      .prepareStatement(buildTransactionQuery(DELETE_QUERY, ids.size()))
         ) {
