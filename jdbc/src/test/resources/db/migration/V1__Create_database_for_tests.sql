@@ -7,6 +7,8 @@ create table if not exists bookings.bookings
 
 alter table bookings.bookings owner to postgres;
 
+INSERT INTO bookings.bookings VALUES ('000000', now(), 10000.00);
+
 create table if not exists bookings.tickets
 (
     ticket_no char(13) not null primary key,
@@ -17,5 +19,3 @@ create table if not exists bookings.tickets
 );
 
 alter table bookings.tickets owner to postgres;
-
-insert into bookings.bookings values ('000000', now(),50000.00);

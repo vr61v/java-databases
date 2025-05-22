@@ -7,14 +7,8 @@ import com.vr61v.filters.Filter;
 import com.vr61v.mappers.TicketMapper;
 import com.vr61v.utils.ConnectionManager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.sql.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -116,7 +110,7 @@ public class TicketsRepository implements Repository<Ticket> {
     """;
 
     private String buildTransactionQuery(String query, int count) {
-        return "BEGIN;" + query.repeat(count) + "END;";
+        return "";
     }
 
     private List<List<String>> extractValuesList(List<Ticket> t) {
@@ -159,20 +153,22 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean addAll(List<Ticket> t) {
-        List<List<String>> valuesList = extractValuesList(t);
+        if (t == null || t.isEmpty()) return false;
 
+        List<List<String>> valuesList = extractValuesList(t);
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection
-                     .prepareStatement(buildTransactionQuery(ADD_QUERY, valuesList.size()))
+             PreparedStatement statement = connection.prepareStatement(ADD_QUERY)
         ) {
-            int index = 0;
             for (List<String> values : valuesList) {
-                for (String value : values) {
-                    statement.setString(++index, value);
+                for (int i = 0; i < values.size(); ++i) {
+                    statement.setString(i + 1, values.get(i));
                 }
+                statement.addBatch();
             }
 
-            return !statement.execute();
+            int[] result = statement.executeBatch();
+            return result.length == valuesList.size() &&
+                    Arrays.stream(result).allMatch(i -> i == 1);
         } catch (SQLException e) {
             throw new RepositoryException(e.getMessage());
         }
@@ -294,7 +290,7 @@ public class TicketsRepository implements Repository<Ticket> {
                     .prepareStatement(FIND_PAGE_QUERY)
         ) {
             statement.setInt(1, size);
-            statement.setInt(2, page * (size + 1));
+            statement.setInt(2, size * page);
 
             ResultSet result = statement.executeQuery();
             List<Ticket> tickets = new ArrayList<>();
@@ -339,18 +335,19 @@ public class TicketsRepository implements Repository<Ticket> {
         List<List<String>> valuesList = extractValuesList(t);
 
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection
-                     .prepareStatement(buildTransactionQuery(UPDATE_QUERY, valuesList.size()))
+             PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)
         ) {
-            int index = 0;
             for (List<String> values : valuesList) {
+                statement.setString(values.size(), values.get(0));
                 for (int i = 1; i < values.size(); ++i) {
-                    statement.setString(++index, values.get(i));
+                    statement.setString(i, values.get(i));
                 }
-                statement.setString(++index, values.get(0));
+                statement.addBatch();
             }
 
-            return !statement.execute();
+            int[] result = statement.executeBatch();
+            return result.length == valuesList.size() &&
+                    Arrays.stream(result).allMatch(i -> i == 1);
         } catch (SQLException e) {
             throw new RepositoryException(e.getMessage());
         }
