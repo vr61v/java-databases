@@ -6,34 +6,62 @@ import com.vr61v.exceptions.RepositoryException;
 import com.vr61v.filters.Filter;
 import com.vr61v.mappers.TicketMapper;
 import com.vr61v.utils.ConnectionManager;
+import com.vr61v.utils.RepositoryConnectionManager;
+import com.vr61v.utils.RepositoryTestsConnectionManager;
 
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of {@link Repository} interface for {@link Ticket} entities.
- * Provides database operations for tickets using JDBC.
- * Uses {@link TicketMapper} for mapping between database records and entity objects.
+ * JDBC implementation of {@link Repository} interface for {@link Ticket} entities.
+ * <p>
+ * This repository handles all database operations for Ticket entities including:
+ * <ul>
+ *   <li>CRUD operations</li>
+ *   <li>Batch operations</li>
+ *   <li>Filtered searches</li>
+ *   <li>Pagination</li>
+ * </ul>
+ * <p>
+ * The repository uses {@link TicketMapper} to convert between database records and
+ * entity objects, and handles JSON serialization of contact data.
+ * <p>
+ * All database operations are performed using prepared statements to prevent SQL injection.
+ * Any SQL or data processing exceptions are wrapped in {@link RepositoryException}.
  *
  * @see Repository
  * @see Ticket
  * @see TicketMapper
+ * @see RepositoryException
  */
 public class TicketsRepository implements Repository<Ticket> {
 
     private final ConnectionManager connectionManager;
-
     private static final TicketMapper mapper = new TicketMapper();
 
+    /**
+     * Constructs a new TicketsRepository with the specified connection manager.
+     *
+     * @param connectionManager the connection manager to use for database access
+     * @throws IllegalArgumentException if connectionManager is null
+     * @see RepositoryConnectionManager
+     * @see RepositoryTestsConnectionManager
+     */
     public TicketsRepository(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 
     /**
      * SQL query for inserting a new ticket record into the database.
-     * Inserts values for all columns: ticket_no, book_ref, passenger_id, passenger_name, contact_data.
-     * The contact_data field is converted from JSON string to Postgres json type.
+     * Inserts values for all columns:
+     * <ul>
+     *   <li>ticket_no - the ticket number (primary key)</li>
+     *   <li>book_ref - booking reference</li>
+     *   <li>passenger_id - passenger identification</li>
+     *   <li>passenger_name - passenger name</li>
+     *   <li>contact_data - contact information in JSON format</li>
+     * </ul>
      */
     private static final String ADD_QUERY = """
         INSERT INTO bookings.tickets
@@ -43,7 +71,7 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * SQL query for finding a ticket by its unique number.
-     * Selects all columns from the tickets table where ticket_no matches the parameter.
+     * Selects all columns from the tickets table where ticket_no matches.
      */
     private static final String FIND_BY_ID_QUERY = """
         SELECT ticket_no, book_ref, passenger_id, passenger_name, contact_data
@@ -62,7 +90,7 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * SQL query for finding multiple tickets by their numbers.
-     * Selects all columns from the tickets table where ticket_no is in the specified list.
+     * Uses Postgres ANY operator to match against array of ticket numbers.
      */
     private static final String FIND_ALL_BY_ID_QUERY = """
         SELECT ticket_no, book_ref, passenger_id, passenger_name, contact_data
@@ -72,9 +100,6 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * SQL query for paginated retrieval of tickets.
-     * Selects all columns from the tickets table with pagination support:
-     * - LIMIT controls the page size (number of records per page)
-     * - OFFSET skips the specified number of records
      * Results are ordered by ticket_no for consistent pagination.
      */
     private static final String FIND_PAGE_QUERY = """
@@ -87,12 +112,7 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * SQL query for updating a ticket record.
-     * Updates all fields of a ticket except the primary key (ticket_no):
-     * - book_ref
-     * - passenger_id
-     * - passenger_name
-     * - contact_data (converted from JSON string to Postgres json type)
-     * The WHERE clause ensures only the ticket with specified ticket_no is updated.
+     * Updates all fields except the primary key (ticket_no).
      */
     private static final String UPDATE_QUERY = """
         UPDATE bookings.tickets
@@ -102,17 +122,18 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * SQL query for deleting a ticket by its number.
-     * Deletes the record from the tickets table where ticket_no matches the parameter.
      */
     public static final String DELETE_QUERY = """
         DELETE FROM bookings.tickets
         WHERE ticket_no = ?;
     """;
 
-    private String buildTransactionQuery(String query, int count) {
-        return "";
-    }
-
+    /**
+     * Extracts database column values from a list of tickets.
+     *
+     * @param t list of tickets to convert
+     * @return list of column value lists
+     */
     private List<List<String>> extractValuesList(List<Ticket> t) {
         List<List<String>> valuesList = new ArrayList<>();
         for (Ticket ticket : t) {
@@ -128,20 +149,25 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * {@inheritDoc}
-     * @throws RepositoryException if there's an error during database operation or JSON processing
+     *
+     * @throws RepositoryException if database error occurs or ticket data is invalid
+     * @throws IllegalArgumentException if ticket is null
      */
     @Override
-    public boolean add(Ticket ticket) {
+    public boolean add(Ticket t) {
+        if (t == null) {
+            throw new IllegalArgumentException("Ticket cannot be null");
+        }
+
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection
-                     .prepareStatement(ADD_QUERY)
+             PreparedStatement statement = connection.prepareStatement(ADD_QUERY)
         ) {
-            List<String> values = mapper.mapToColumns(ticket);
+            List<String> values = mapper.mapToColumns(t);
             for (int i = 0; i < values.size(); ++i) {
                 statement.setString(i + 1, values.get(i));
             }
 
-            return statement.executeUpdate() > 0;
+            return statement.executeUpdate() == 1;
         } catch (SQLException | JsonProcessingException e) {
             throw new RepositoryException(e.getMessage());
         }
@@ -149,11 +175,20 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * {@inheritDoc}
-     * @throws RepositoryException if there's an error during database operation or JSON processing
+     * <p>
+     * This implementation uses batch processing for efficient insertion of multiple tickets.
+     * The operation is atomic - either all tickets are added or none.
+     *
+     * @param t list of tickets to add, must not be null or empty
+     * @return True if all tickets were successfully added, false if any insertion failed
+     * @throws RepositoryException if there's a database error or ticket data is invalid
+     * @throws IllegalArgumentException if the list is null, contains null or empty
      */
     @Override
     public boolean addAll(List<Ticket> t) {
-        if (t == null || t.isEmpty()) return false;
+        if (t == null || t.isEmpty() || t.stream().anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("Ticket list cannot be null, contains null or empty");
+        }
 
         List<List<String>> valuesList = extractValuesList(t);
         try (Connection connection = connectionManager.getConnection();
@@ -176,13 +211,20 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * {@inheritDoc}
-     * @throws RepositoryException if there's an error during database operation or JSON processing
+     *
+     * @param id the ticket number to search for, must not be null or empty
+     * @return Optional containing the found ticket or empty if not found
+     * @throws RepositoryException if there's a database error
+     * @throws IllegalArgumentException if id is null or empty
      */
     @Override
     public Optional<Ticket> findById(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("Ticket ID cannot be null or empty");
+        }
+
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection
-                     .prepareStatement(FIND_BY_ID_QUERY)
+             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_QUERY)
         ) {
             statement.setString(1, id);
 
@@ -198,13 +240,14 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * {@inheritDoc}
-     * @throws RepositoryException if there's an error during database operation or JSON processing
+     *
+     * @return List of all tickets, empty list if no tickets found
+     * @throws RepositoryException if there's a database error
      */
     @Override
     public List<Ticket> findAll() {
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection
-                    .prepareStatement(FIND_ALL_QUERY)
+             PreparedStatement statement = connection.prepareStatement(FIND_ALL_QUERY)
         ) {
             ResultSet result = statement.executeQuery();
             List<Ticket> tickets = new ArrayList<>();
@@ -218,8 +261,23 @@ public class TicketsRepository implements Repository<Ticket> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Builds a dynamic WHERE clause based on the filter parameters.
+     * Only non-null filter values are included in the query.
+     *
+     * @param filter the filter criteria, must not be null
+     * @return List of matching tickets, empty list if none found
+     * @throws RepositoryException if there's a database error or invalid filter
+     * @throws IllegalArgumentException if filter is null
+     */
     @Override
     public List<Ticket> findAll(Filter filter) {
+        if (filter == null) {
+            throw new IllegalArgumentException("Filter cannot be null");
+        }
+
         Map<String, Object> whereParameters = filter.toWhereParameters();
         List<String> keys = new ArrayList<>();
         List<Object> values = new ArrayList<>();
@@ -227,14 +285,10 @@ public class TicketsRepository implements Repository<Ticket> {
             keys.add(entry.getKey());
             values.add(entry.getValue());
         }
-
-        String query = FIND_ALL_QUERY +
-                keys.stream().collect(
-                        Collectors.joining(" AND ", " WHERE ", ";")
-                );
+        String where = keys.stream().collect(Collectors.joining(" AND ", " WHERE ", ";"));
+        String query = FIND_ALL_QUERY + where;
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection
-                     .prepareStatement(query)
+             PreparedStatement statement = connection.prepareStatement(query)
         ) {
             for (int i = 0; i < values.size(); ++i) {
                 statement.setObject(i + 1, values.get(i));
@@ -254,13 +308,23 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * {@inheritDoc}
-     * @throws RepositoryException if there's an error during database operation or JSON processing
+     * <p>
+     * Uses Postgres ANY operator for efficient lookup of multiple tickets.
+     * The returned list may be smaller than the input list if some tickets weren't found.
+     *
+     * @param ids list of ticket numbers to search for, must not be null or empty
+     * @return List of found tickets, empty list if none found
+     * @throws RepositoryException if there's a database error
+     * @throws IllegalArgumentException if ids list is null, contains null or empty
      */
     @Override
     public List<Ticket> findAllById(List<String> ids) {
+        if (ids == null || ids.isEmpty() || ids.stream().anyMatch(str -> str == null || str.isEmpty())) {
+            throw new IllegalArgumentException("IDs list cannot be null, contains null or empty");
+        }
+
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection
-                    .prepareStatement(FIND_ALL_BY_ID_QUERY)
+             PreparedStatement statement = connection.prepareStatement(FIND_ALL_BY_ID_QUERY)
         ) {
             statement.setArray(
                     1,
@@ -281,13 +345,24 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * {@inheritDoc}
-     * @throws RepositoryException if there's an error during database operation or JSON processing
+     *
+     * @param page the page number (0-based)
+     * @param size the number of tickets per page, must be positive
+     * @return List of tickets for the page, empty list if page is empty
+     * @throws RepositoryException if there's a database error
+     * @throws IllegalArgumentException if page is negative or size is not positive
      */
     @Override
     public List<Ticket> findPage(int page, int size) {
+        if (page < 0) {
+            throw new IllegalArgumentException("Page number cannot be negative");
+        }
+        if (size <= 0) {
+            throw new IllegalArgumentException("Page size must be positive");
+        }
+
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection
-                    .prepareStatement(FIND_PAGE_QUERY)
+             PreparedStatement statement = connection.prepareStatement(FIND_PAGE_QUERY)
         ) {
             statement.setInt(1, size);
             statement.setInt(2, size * page);
@@ -306,13 +381,23 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * {@inheritDoc}
-     * @throws RepositoryException if there's an error during database operation or JSON processing
+     * <p>
+     * Updates all ticket fields except the primary key (ticket_no).
+     * The ticket must exist in the database for the update to succeed.
+     *
+     * @param ticket the ticket with updated information, must not be null
+     * @return True if the ticket was successfully updated, false if not found
+     * @throws RepositoryException if there's a database error or ticket data is invalid
+     * @throws IllegalArgumentException if ticket is null
      */
     @Override
     public boolean update(Ticket ticket) {
+        if (ticket == null) {
+            throw new IllegalArgumentException("Ticket cannot be null");
+        }
+
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection
-                     .prepareStatement(UPDATE_QUERY)
+             PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)
         ) {
             List<String> values = mapper.mapToColumns(ticket);
             statement.setString(values.size(), values.get(0));
@@ -320,7 +405,7 @@ public class TicketsRepository implements Repository<Ticket> {
                 statement.setString(i, values.get(i));
             }
 
-            return statement.executeUpdate() > 0;
+            return statement.executeUpdate() == 1;
         } catch (SQLException | JsonProcessingException e) {
             throw new RepositoryException(e.getMessage());
         }
@@ -328,12 +413,22 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * {@inheritDoc}
-     * @throws RepositoryException if there's an error during database operation or JSON processing
+     * <p>
+     * Performs batch update of multiple tickets. The operation is atomic - either all
+     * tickets are updated or none.
+     *
+     * @param t list of tickets to update, must not be null or empty
+     * @return True if all tickets were successfully updated, false if any update failed
+     * @throws RepositoryException if there's a database error
+     * @throws IllegalArgumentException if tickets list is null, contains null or empty
      */
     @Override
     public boolean updateAll(List<Ticket> t) {
-        List<List<String>> valuesList = extractValuesList(t);
+        if (t == null || t.isEmpty() || t.stream().anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("Tickets list cannot be null, contains null or empty");
+        }
 
+        List<List<String>> valuesList = extractValuesList(t);
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)
         ) {
@@ -355,17 +450,23 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * {@inheritDoc}
-     * @throws RepositoryException if there's an error during database operation
+     *
+     * @param id the ticket number to delete, must not be null or empty
+     * @return True if the ticket was successfully deleted, false if not found
+     * @throws RepositoryException if there's a database error
+     * @throws IllegalArgumentException if id is null or empty
      */
     @Override
     public boolean delete(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("Ticket ID cannot be null or empty");
+        }
+
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection
-                     .prepareStatement(DELETE_QUERY)
+             PreparedStatement statement = connection.prepareStatement(DELETE_QUERY)
         ) {
             statement.setString(1, id);
-
-            return statement.executeUpdate() > 0;
+            return statement.executeUpdate() == 1;
         } catch (SQLException e) {
             throw new RepositoryException(e.getMessage());
         }
@@ -373,19 +474,32 @@ public class TicketsRepository implements Repository<Ticket> {
 
     /**
      * {@inheritDoc}
-     * @throws RepositoryException if there's an error during database operation
+     * <p>
+     * Performs batch deletion of multiple tickets. The operation is atomic - either all
+     * tickets are deleted or none.
+     *
+     * @param ids list of ticket numbers to delete, must not be null or empty
+     * @return True if all tickets were successfully deleted, false if any deletion failed
+     * @throws RepositoryException if there's a database error
+     * @throws IllegalArgumentException if ids list is null, contains null or empty
      */
     @Override
     public boolean deleteAll(List<String> ids) {
+        if (ids == null || ids.isEmpty() || ids.stream().anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("IDs list cannot be null, contains null or empty");
+        }
+
         try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection
-                     .prepareStatement(buildTransactionQuery(DELETE_QUERY, ids.size()))
+             PreparedStatement statement = connection.prepareStatement(DELETE_QUERY)
         ) {
-            for (int i = 0; i < ids.size(); ++i) {
-                statement.setString(i + 1, ids.get(i));
+            for (String id : ids) {
+                statement.setString(1, id);
+                statement.addBatch();
             }
 
-            return !statement.execute();
+            int[] result = statement.executeBatch();
+            return result.length == ids.size() &&
+                    Arrays.stream(result).allMatch(i -> i == 1);
         } catch (SQLException e) {
             throw new RepositoryException(e.getMessage());
         }
