@@ -14,7 +14,9 @@
 - PostgreSQL
 - JDBC
 - Docker
+- JUnit
 - Jackson (для работы с JSON)
+- FlyWay (для миграции тестовой БД)
 - Maven
 
 ## Установка
@@ -46,10 +48,12 @@
     │   ├── java/com/vr61v/
     │   │   ├── entities/       # Сущности предметной области
     │   │   ├── exceptions/     # Пользовательские исключения
+    │   │   ├── filters/        # Фильтры для поиска данных
     │   │   ├── mappers/        # Мапперы для преобразования данных
     │   │   ├── repositories/   # Репозитории для работы с БД
     │   │   └── utils/          # Вспомогательные утилиты
     │   └── resources/          # Конфигурационные файлы
+    
     postgres/                   # Файлы для инициализации БД
     docker-compose.yml          # Конфигурация Docker
 ```
@@ -77,6 +81,7 @@
 * addAll(List<T> entities) - массовое добавление сущностей
 * findById(String id) - поиск сущности по ID
 * findAll() - получение всех сущностей
+* findAll(Filter filter) - получение всех сущностей по фильтру
 * findAllById(List<String> ids) - поиск нескольких сущностей по ID
 * findPage(int page, int size) - постраничное получение сущностей
 * update(T entity) - обновление сущности
