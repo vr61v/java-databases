@@ -4,6 +4,6 @@
 
 ## Технологии
 - **JDBC** - низкоуровневая работа с БД
-- **Hibernate** - популярный ORM-фреймворк
+- **Hibernate** - ORM
 - **Spring Data** - высокоуровневая абстракция для работы с данными
 - **База данных**: PostgreSQL demo by postgres professional
