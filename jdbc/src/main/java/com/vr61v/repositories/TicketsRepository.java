@@ -485,7 +485,7 @@ public class TicketsRepository implements Repository<Ticket> {
      */
     @Override
     public boolean deleteAll(List<String> ids) {
-        if (ids == null || ids.isEmpty() || ids.stream().anyMatch(Objects::isNull)) {
+        if (ids == null || ids.isEmpty() || ids.stream().anyMatch(i -> i == null || i.isEmpty())) {
             throw new IllegalArgumentException("IDs list cannot be null, contains null or empty");
         }
 

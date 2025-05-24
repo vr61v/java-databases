@@ -15,7 +15,6 @@ public class TicketFilter implements Filter {
 
     private final static ObjectMapper mapper = new ObjectMapper();
 
-    private final String ticketNo;
     private final String bookRef;
     private final String passengerId;
     private final String passengerName;
@@ -25,17 +24,14 @@ public class TicketFilter implements Filter {
     public Map<String, Object> toWhereParameters() {
         Map<String, Object> parameters = new HashMap<>();
 
-        if (ticketNo != null) {
-            parameters.put("ticket_no = ?", ticketNo);
-        }
         if (bookRef != null) {
-            parameters.put("book_ref = ?", bookRef);
+            parameters.put("book_ref LIKE ?", bookRef);
         }
         if (passengerId != null) {
-            parameters.put("passenger_id = ?", passengerId);
+            parameters.put("passenger_id LIKE ?", passengerId);
         }
         if (passengerName != null) {
-            parameters.put("passenger_name = ?", passengerName);
+            parameters.put("passenger_name LIKE ?", passengerName);
         }
         if (contactData != null) {
             try {
