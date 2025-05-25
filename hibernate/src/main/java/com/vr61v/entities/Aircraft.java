@@ -1,0 +1,35 @@
+package com.vr61v.entities;
+
+import com.vr61v.entities.embedded.Model;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.Set;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = "seats")
+@EqualsAndHashCode(exclude = "seats")
+@Builder
+@Entity
+@Table(name = "aircrafts_data", schema = "bookings")
+public class Aircraft {
+    @Id
+    @Column(name = "aircraft_code", nullable = false)
+    private String aircraftCode;
+
+    @Embedded
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "model", nullable = false)
+    private Model model;
+
+    @Column(name = "range", nullable = false)
+    private Integer range;
+
+    @OneToMany(mappedBy = "id.aircraft")
+    private Set<Seat> seats;
+
+}

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -26,5 +26,5 @@ public class Booking {
     private Float totalAmount;
 
     @OneToMany(mappedBy = "booking")
-    private List<Ticket> tickets;
+    private Set<Ticket> tickets;
 }

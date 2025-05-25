@@ -1,8 +1,12 @@
 package com.vr61v;
 
+import com.vr61v.entities.Aircraft;
 import com.vr61v.entities.Booking;
+import com.vr61v.entities.Seat;
 import com.vr61v.entities.Ticket;
 import com.vr61v.entities.embedded.ContactData;
+import com.vr61v.entities.embedded.Model;
+import com.vr61v.entities.embedded.SeatID;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -14,6 +18,8 @@ public class HibernateRunner {
         Configuration configuration = new Configuration()
                 .addAnnotatedClass(Booking.class)
                 .addAnnotatedClass(Ticket.class)
+                .addAnnotatedClass(Aircraft.class)
+                .addAnnotatedClass(Seat.class)
                 .configure("hibernate.cfg.xml");
 
         try (SessionFactory factory = configuration.buildSessionFactory();
@@ -36,7 +42,27 @@ public class HibernateRunner {
                     .build();
             session.persist(ticket);
             session.getTransaction().commit();
+            System.out.println(booking);
+            System.out.println(ticket);
 
+            session.beginTransaction();
+            Aircraft aircraft = Aircraft.builder()
+                    .aircraftCode("AAA")
+                    .model(Model.builder().ru("самолет").en("aircraft").build())
+                    .range(10_000)
+                    .build();
+
+            session.persist(aircraft);
+
+            Seat seat = Seat.builder()
+                    .id(SeatID.builder().aircraft(aircraft).seatNo("2A").build())
+                    .fareConditions("Business")
+                    .build();
+            session.persist(seat);
+
+            session.getTransaction().commit();
+            System.out.println(aircraft);
+            System.out.println(seat);
         }
     }
 }
