@@ -11,8 +11,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "seats")
-@EqualsAndHashCode(exclude = "seats")
+@ToString(exclude = {"seats", "flights"})
+@EqualsAndHashCode(exclude = {"seats", "flights"})
 @Builder
 @Entity
 @Table(name = "aircrafts_data", schema = "bookings")
@@ -33,7 +33,7 @@ public class Aircraft {
     @OneToMany(mappedBy = "id.aircraft")
     private Set<Seat> seats;
 
-    @OneToMany(mappedBy = "aircraft_code")
+    @OneToMany(mappedBy = "aircraft")
     private Set<Flight> flights;
 
 }
