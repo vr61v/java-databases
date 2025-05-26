@@ -16,6 +16,7 @@ import org.hibernate.type.SqlTypes;
 @Entity
 @Table(name = "tickets", schema = "bookings")
 public class Ticket {
+
     @Id
     @Column(name = "ticket_no", length = 13, nullable = false)
     private String ticketNo;

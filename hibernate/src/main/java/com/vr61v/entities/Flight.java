@@ -34,6 +34,14 @@ public class Flight {
     @Column(name = "flight_no", length = 6, nullable = false)
     private String flightNo;
 
+    @Column(name = "status", length = 20, nullable = false)
+    private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "aircraft_code", nullable = false)
+    private Aircraft aircraft;
+
+
     @ManyToOne
     @JoinColumn(name = "departure_airport", nullable = false)
     private Airport departureAirport;
@@ -42,12 +50,6 @@ public class Flight {
     @JoinColumn(name = "arrival_airport", nullable = false)
     private Airport arrivalAirport;
 
-    @Column(name = "status", length = 20, nullable = false)
-    private String status;
-
-    @ManyToOne
-    @JoinColumn(name = "aircraft_code", nullable = false)
-    private Aircraft aircraft;
 
     @Column(name = "scheduled_departure", nullable = false)
     private OffsetDateTime scheduledDeparture;
@@ -60,4 +62,5 @@ public class Flight {
 
     @Column(name = "actual_arrival", nullable = false)
     private OffsetDateTime actualArrival;
+
 }

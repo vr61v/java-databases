@@ -15,6 +15,7 @@ import java.util.Set;
 @Entity
 @Table(name = "bookings", schema = "bookings")
 public class Booking {
+
     @Id
     @Column(name = "book_ref", length = 6, nullable = false)
     private String bookRef;
@@ -27,4 +28,5 @@ public class Booking {
 
     @OneToMany(mappedBy = "booking")
     private Set<Ticket> tickets;
+
 }

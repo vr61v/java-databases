@@ -17,6 +17,7 @@ import java.util.Set;
 @Entity
 @Table(name = "aircrafts_data", schema = "bookings")
 public class Aircraft {
+
     @Id
     @Column(name = "aircraft_code", nullable = false)
     private String aircraftCode;
@@ -31,5 +32,8 @@ public class Aircraft {
 
     @OneToMany(mappedBy = "id.aircraft")
     private Set<Seat> seats;
+
+    @OneToMany(mappedBy = "aircraft_code")
+    private Set<Flight> flights;
 
 }

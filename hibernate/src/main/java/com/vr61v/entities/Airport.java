@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,5 +41,11 @@ public class Airport {
 
     @Column(name = "timezone", nullable = false)
     private String timezone;
+
+    @OneToMany(mappedBy = "departure_airport")
+    private Set<Flight> departures;
+
+    @OneToMany(mappedBy = "arraival_airport")
+    private Set<Flight> arrivals;
 
 }
