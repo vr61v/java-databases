@@ -1,6 +1,6 @@
 package com.vr61v.entities;
 
-import com.vr61v.entities.embedded.Model;
+import com.vr61v.entities.embedded.LocalizedString;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -24,7 +24,7 @@ public class Aircraft {
     @Embedded
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "model", nullable = false)
-    private Model model;
+    private LocalizedString model;
 
     @Column(name = "range", nullable = false)
     private Integer range;
