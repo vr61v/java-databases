@@ -1,5 +1,6 @@
 package com.vr61v.entities;
 
+import com.vr61v.entities.types.FlightStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,8 +35,9 @@ public class Flight {
     @Column(name = "flight_no", length = 6, nullable = false)
     private String flightNo;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20, nullable = false)
-    private String status;
+    private FlightStatus status;
 
     @ManyToOne
     @JoinColumn(name = "aircraft_code", nullable = false)

@@ -1,10 +1,8 @@
 package com.vr61v.entities;
 
 import com.vr61v.entities.embedded.SeatID;
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.vr61v.entities.types.FareCondition;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +19,8 @@ public class Seat {
     @EmbeddedId
     private SeatID id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "fare_conditions", length = 10, nullable = false)
-    private String fareConditions;
+    private FareCondition fareConditions;
 
 }
