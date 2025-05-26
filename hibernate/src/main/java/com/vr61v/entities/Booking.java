@@ -7,11 +7,11 @@ import java.time.OffsetDateTime;
 import java.util.Set;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "tickets")
 @EqualsAndHashCode(exclude = "tickets")
+@Builder
 @Entity
 @Table(name = "bookings", schema = "bookings")
 public class Booking {

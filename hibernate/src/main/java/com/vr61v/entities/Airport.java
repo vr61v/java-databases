@@ -10,9 +10,9 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "airports_data", schema = "bookings")
 public class Airport {
@@ -31,9 +31,11 @@ public class Airport {
     @Column(name = "city", nullable = false)
     private LocalizedString city;
 
-//  todo: разобраться как можно парсить Point, пока что в табличке эта колонка должна быть удалена
-//    @Column(name = "coordinates", columnDefinition = "Point", nullable = false)
-//    private Point coordinates;
+/*
+    todo: разобраться как можно парсить Point, пока что в табличке эта колонка должна быть удалена
+     @Column(name = "coordinates", columnDefinition = "Point", nullable = false)
+     private Point coordinates;
+ */
 
     @Column(name = "timezone", nullable = false)
     private String timezone;
