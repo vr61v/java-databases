@@ -5,32 +5,30 @@ import com.vr61v.repositories.BookingsRepository;
 import com.vr61v.utils.RepositorySessionManager;
 
 import java.time.OffsetDateTime;
-import java.util.Optional;
 
 public class HibernateRunner {
     public static void main(String[] args) {
         RepositorySessionManager sessionManager = new RepositorySessionManager();
         BookingsRepository bookingsRepository = new BookingsRepository(sessionManager);
 
+        String id = "123456";
         Booking booking1 = Booking.builder()
-                .bookRef("123456")
+                .bookRef(id)
                 .bookDate(OffsetDateTime.now())
                 .totalAmount(50_000.00F)
                 .build();
 
         Booking booking2 = Booking.builder()
-                .bookRef("123456")
+                .bookRef(id)
                 .bookDate(OffsetDateTime.now().plusDays(1))
                 .totalAmount(10_000.00F)
                 .build();
 
-        bookingsRepository.save(booking1);
-        bookingsRepository.update(booking2);
-        Optional<Booking> found1 = bookingsRepository.findById(booking2.getBookRef());
-        bookingsRepository.delete(booking2);
-        Optional<Booking> found2 = bookingsRepository.findById(booking2.getBookRef());
-        System.out.println(found1.get());
-        System.out.println(found2.isPresent());
+        System.out.println(bookingsRepository.save(booking1));
+        System.out.println(bookingsRepository.update(booking2));
+        System.out.println(bookingsRepository.findById(id));
+        System.out.println(bookingsRepository.delete(booking1));
+        System.out.println(bookingsRepository.findById(id));
     }
 }
 
