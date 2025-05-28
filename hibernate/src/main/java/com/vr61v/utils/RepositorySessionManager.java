@@ -28,6 +28,25 @@ public class RepositorySessionManager implements SessionManager {
         }
     }
 
+    public RepositorySessionManager(String configurationPath) {
+        try {
+            Configuration configuration = new Configuration()
+                    .addAnnotatedClass(Booking.class)
+                    .addAnnotatedClass(Ticket.class)
+                    .addAnnotatedClass(Aircraft.class)
+                    .addAnnotatedClass(Seat.class)
+                    .addAnnotatedClass(Airport.class)
+                    .addAnnotatedClass(Flight.class)
+                    .addAnnotatedClass(TicketFlight.class)
+                    .addAnnotatedClass(BoardingPass.class)
+                    .configure(configurationPath);
+
+            this.sessionFactory = configuration.buildSessionFactory();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public Session getSession() {
         return sessionFactory.openSession();

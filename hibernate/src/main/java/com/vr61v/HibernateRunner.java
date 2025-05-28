@@ -1,7 +1,7 @@
 package com.vr61v;
 
 import com.vr61v.entities.Booking;
-import com.vr61v.repositories.BookingsRepository;
+import com.vr61v.repositories.BookingRepository;
 import com.vr61v.utils.RepositorySessionManager;
 
 import java.time.OffsetDateTime;
@@ -9,7 +9,7 @@ import java.time.OffsetDateTime;
 public class HibernateRunner {
     public static void main(String[] args) {
         RepositorySessionManager sessionManager = new RepositorySessionManager();
-        BookingsRepository bookingsRepository = new BookingsRepository(sessionManager);
+        BookingRepository bookingsRepository = new BookingRepository(sessionManager);
 
         String id = "123456";
         Booking booking1 = Booking.builder()
