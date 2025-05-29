@@ -1,15 +1,10 @@
-import com.vr61v.entities.Aircraft;
-import com.vr61v.entities.Booking;
-import com.vr61v.entities.Seat;
-import com.vr61v.entities.Ticket;
+import com.vr61v.entities.*;
 import com.vr61v.entities.embedded.ContactData;
 import com.vr61v.entities.embedded.LocalizedString;
 import com.vr61v.entities.embedded.SeatID;
 import com.vr61v.entities.types.FareCondition;
-import com.vr61v.repositories.AircraftRepository;
-import com.vr61v.repositories.BookingRepository;
-import com.vr61v.repositories.SeatRepository;
-import com.vr61v.repositories.TicketRepository;
+import com.vr61v.entities.types.FlightStatus;
+import com.vr61v.repositories.*;
 import com.vr61v.utils.RepositorySessionManager;
 import org.junit.Test;
 
@@ -232,5 +227,136 @@ public class RepositoryTests {
 
         // Cleanup booking table
         assertThat(aircraftRepository.delete(aircraft)).isTrue();
+    }
+
+    @Test
+    public void crudOperationsAirportRepository() {
+        // Setup initial data
+        AirportRepository airportRepository = new AirportRepository(sessionManager);
+
+        String airportCod = "COD";
+        Airport airport = Airport.builder()
+                .airportCode(airportCod)
+                .airportName(LocalizedString.builder().ru("название").en("name").build())
+                .city(LocalizedString.builder().ru("город").en("city").build())
+                .timezone("Europe/Moscow")
+                .build();
+
+        // When save then should return saved airport from DB
+        // When findById should return Optional with saved airport
+        Airport saved = airportRepository.save(airport);
+        assertThat(saved).isEqualTo(airport);
+        assertThat(airportRepository.findById(airportCod)).isPresent();
+
+
+        // When update then should update airport with new fields
+        Airport updated = Airport.builder()
+                .airportCode(airportCod)
+                .airportName(LocalizedString.builder().ru("аэропорт").en("airport").build())
+                .city(LocalizedString.builder().ru("русский аэропорт").en("russian airport").build())
+                .timezone("Europe/Moscow")
+                .build();
+
+        airportRepository.update(updated);
+
+
+        // When findById then return updated name and city
+        Optional<Airport> found = airportRepository.findById(airportCod);
+        assertThat(found).isPresent();
+        assertThat(found.get().getAirportName()).isEqualTo(updated.getAirportName());
+        assertThat(found.get().getCity()).isEqualTo(updated.getCity());
+
+
+        // When delete then should delete airport from DB
+        // When findById should return empty Optional
+        boolean deleted = airportRepository.delete(found.get());
+        assertThat(deleted).isTrue();
+        assertThat(airportRepository.findById(airportCod)).isEmpty();
+    }
+
+    @Test
+    public void crudOperationsFlightRepository() {
+        // Setup initial data
+        AircraftRepository aircraftRepository = new AircraftRepository(sessionManager);
+        AirportRepository airportRepository = new AirportRepository(sessionManager);
+        FlightRepository flightRepository = new FlightRepository(sessionManager);
+
+        String aircraftId = "AIR";
+        Aircraft aircraft = Aircraft.builder()
+                .aircraftCode(aircraftId)
+                .model(LocalizedString.builder().ru("самолет").en("aircraft").build())
+                .range(1000)
+                .build();
+
+        String airportCodDeparture = "COD";
+        Airport airportDeparture = Airport.builder()
+                .airportCode(airportCodDeparture)
+                .airportName(LocalizedString.builder().ru("откуда").en("from").build())
+                .city(LocalizedString.builder().ru("отправления").en("departure").build())
+                .timezone("Europe/Moscow")
+                .build();
+
+        String airportCodArrival = "DOC";
+        Airport airportArrival = Airport.builder()
+                .airportCode(airportCodArrival)
+                .airportName(LocalizedString.builder().ru("куда").en("to").build())
+                .city(LocalizedString.builder().ru("назначения").en("arrival").build())
+                .timezone("Europe/Moscow")
+                .build();
+
+        aircraftRepository.save(aircraft);
+        airportRepository.save(airportDeparture);
+        airportRepository.save(airportArrival);
+
+        Flight flight = Flight.builder()
+                .flightNo("SOMEFL")
+                .aircraft(aircraft)
+                .status(FlightStatus.SCHEDULED)
+                .departureAirport(airportDeparture)
+                .arrivalAirport(airportArrival)
+                .scheduledDeparture(OffsetDateTime.now())
+                .scheduledArrival(OffsetDateTime.now().plusHours(4))
+                .build();
+
+
+        // When save then should return saved flight from DB
+        // When findById should return Optional with saved flight
+        Flight saved = flightRepository.save(flight);
+        Integer flightId = saved.getFlightId();
+        assertThat(saved).isEqualTo(flight);
+        assertThat(flightRepository.findById(flightId)).isPresent();
+
+        // When update then should update flight with new fields
+        Flight updated = Flight.builder()
+                .flightId(flightId)
+                .flightNo("SOMEFL")
+                .aircraft(aircraft)
+                .status(FlightStatus.DEPARTED)
+                .departureAirport(airportDeparture)
+                .arrivalAirport(airportArrival)
+                .scheduledDeparture(flight.getScheduledDeparture())
+                .scheduledArrival(flight.getScheduledArrival())
+                .actualDeparture(flight.getScheduledDeparture())
+                .build();
+
+        flightRepository.update(updated);
+
+
+        // When findById then return updated status and actualDeparture
+        Optional<Flight> found = flightRepository.findById(flightId);
+        assertThat(found).isPresent();
+        assertThat(found.get().getStatus()).isEqualTo(updated.getStatus());
+        assertThat(found.get().getActualDeparture()).isEqualTo(updated.getActualDeparture());
+
+
+        // When delete then should delete aircraft from DB
+        // When findById should return empty Optional
+        boolean deleted = flightRepository.delete(found.get());
+        assertThat(deleted).isTrue();
+        assertThat(flightRepository.findById(flightId)).isEmpty();
+
+        aircraftRepository.delete(aircraft);
+        airportRepository.delete(airportDeparture);
+        airportRepository.delete(airportArrival);
     }
 }

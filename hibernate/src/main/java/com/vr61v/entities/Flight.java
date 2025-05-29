@@ -53,16 +53,16 @@ public class Flight {
     private Airport arrivalAirport;
 
 
-    @Column(name = "scheduled_departure", nullable = false)
+    @Column(name = "scheduled_departure")
     private OffsetDateTime scheduledDeparture;
 
-    @Column(name = "scheduled_arrival", nullable = false)
+    @Column(name = "scheduled_arrival")
     private OffsetDateTime scheduledArrival;
 
-    @Column(name = "actual_departure", nullable = false)
+    @Column(name = "actual_departure")
     private OffsetDateTime actualDeparture;
 
-    @Column(name = "actual_arrival", nullable = false)
+    @Column(name = "actual_arrival")
     private OffsetDateTime actualArrival;
 
 }
