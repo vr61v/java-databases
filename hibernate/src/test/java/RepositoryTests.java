@@ -67,16 +67,22 @@ public class RepositoryTests {
     public void crudOperationsTicketRepository() {
         // setup initial data
         BookingRepository bookingRepository = new BookingRepository(sessionManager);
-        TicketRepository ticketRepository = new TicketRepository(sessionManager);
-
-        String bookingId = "123456";
         Booking booking = Booking.builder()
-                .bookRef(bookingId)
+                .bookRef("123456")
                 .bookDate(OffsetDateTime.now())
                 .totalAmount(50_000.00F)
                 .build();
-        bookingRepository.save(booking);
 
+        try {
+            bookingRepository.save(booking);
+        } catch (RepositoryException e) {
+            bookingRepository.update(booking);
+            System.out.println(e.getMessage());
+        }
+
+
+        // Create testing entity
+        TicketRepository ticketRepository = new TicketRepository(sessionManager);
         ContactData contacts = ContactData.builder()
                 .email("email@gmail.com")
                 .phone("+79999999999")
@@ -133,7 +139,6 @@ public class RepositoryTests {
     public void crudOperationsAircraftRepository() {
         // Setup initial data
         AircraftRepository aircraftRepository = new AircraftRepository(sessionManager);
-
         String aircraftId = "AIR";
         Aircraft aircraft = Aircraft.builder()
                 .aircraftCode(aircraftId)
@@ -176,16 +181,22 @@ public class RepositoryTests {
     public void crudOperationsSeatRepository() {
         // Setup initial data
         AircraftRepository aircraftRepository = new AircraftRepository(sessionManager);
-        SeatRepository seatRepository = new SeatRepository(sessionManager);
-
-        String aircraftId = "AIR";
         Aircraft aircraft = Aircraft.builder()
-                .aircraftCode(aircraftId)
+                .aircraftCode("AIR")
                 .model(LocalizedString.builder().ru("самолет").en("aircraft").build())
                 .range(1000)
                 .build();
-        aircraftRepository.save(aircraft);
 
+        try {
+            aircraftRepository.save(aircraft);
+        } catch (RepositoryException e) {
+            aircraftRepository.update(aircraft);
+            System.out.println(e.getMessage());
+        }
+
+
+        // Create testing entity
+        SeatRepository seatRepository = new SeatRepository(sessionManager);
         SeatID seatId = SeatID.builder()
                 .seatNo("AAAA")
                 .aircraft(aircraft)
@@ -234,7 +245,6 @@ public class RepositoryTests {
     public void crudOperationsAirportRepository() {
         // Setup initial data
         AirportRepository airportRepository = new AirportRepository(sessionManager);
-
         String airportCod = "COD";
         Airport airport = Airport.builder()
                 .airportCode(airportCod)
@@ -280,9 +290,6 @@ public class RepositoryTests {
     public void crudOperationsFlightRepository() {
         // Setup initial data
         AircraftRepository aircraftRepository = new AircraftRepository(sessionManager);
-        AirportRepository airportRepository = new AirportRepository(sessionManager);
-        FlightRepository flightRepository = new FlightRepository(sessionManager);
-
         String aircraftId = "AIR";
         Aircraft aircraft = Aircraft.builder()
                 .aircraftCode(aircraftId)
@@ -290,6 +297,14 @@ public class RepositoryTests {
                 .range(1000)
                 .build();
 
+        try {
+            aircraftRepository.save(aircraft);
+        } catch (RepositoryException e) {
+            aircraftRepository.update(aircraft);
+            System.out.println(e.getMessage());
+        }
+
+        AirportRepository airportRepository = new AirportRepository(sessionManager);
         String airportCodDeparture = "COD";
         Airport airportDeparture = Airport.builder()
                 .airportCode(airportCodDeparture)
@@ -306,10 +321,23 @@ public class RepositoryTests {
                 .timezone("Europe/Moscow")
                 .build();
 
-        aircraftRepository.save(aircraft);
-        airportRepository.save(airportDeparture);
-        airportRepository.save(airportArrival);
+        try {
+            airportRepository.save(airportDeparture);
+        } catch (RepositoryException e) {
+            airportRepository.update(airportDeparture);
+            System.out.println(e.getMessage());
+        }
 
+        try {
+            airportRepository.save(airportArrival);
+        } catch (RepositoryException e) {
+            airportRepository.update(airportArrival);
+            System.out.println(e.getMessage());
+        }
+
+
+        // Create testing entity
+        FlightRepository flightRepository = new FlightRepository(sessionManager);
         Flight flight = Flight.builder()
                 .flightNo("SOMEFL")
                 .aircraft(aircraft)
@@ -370,12 +398,12 @@ public class RepositoryTests {
         AircraftRepository aircraftRepository = new AircraftRepository(sessionManager);
         SeatRepository seatRepository = new SeatRepository(sessionManager);
 
-        String aircraftId = "AIR";
         Aircraft aircraft = Aircraft.builder()
-                .aircraftCode(aircraftId)
+                .aircraftCode("AIR")
                 .model(LocalizedString.builder().ru("самолет").en("aircraft").build())
                 .range(1000)
                 .build();
+
         Seat seat = Seat.builder()
                 .id(SeatID.builder()
                         .aircraft(aircraft)
@@ -391,6 +419,7 @@ public class RepositoryTests {
             aircraftRepository.update(aircraft);
             System.out.println(e.getMessage());
         }
+
         try {
             seatRepository.save(seat);
         } catch (RepositoryException e) {
@@ -407,12 +436,14 @@ public class RepositoryTests {
                 .city(LocalizedString.builder().ru("отправления").en("departure").build())
                 .timezone("Europe/Moscow")
                 .build();
+
         Airport airportArrival = Airport.builder()
                 .airportCode("DOC")
                 .airportName(LocalizedString.builder().ru("куда").en("to").build())
                 .city(LocalizedString.builder().ru("назначения").en("arrival").build())
                 .timezone("Europe/Moscow")
                 .build();
+
         Flight flight = Flight.builder()
                 .flightNo("SOMEFL")
                 .aircraft(aircraft)
@@ -429,12 +460,14 @@ public class RepositoryTests {
             airportRepository.update(airportDeparture);
             System.out.println(e.getMessage());
         }
+
         try {
             airportRepository.save(airportArrival);
         } catch (RepositoryException e) {
             airportRepository.update(airportArrival);
             System.out.println(e.getMessage());
         }
+
         try {
             flightRepository.save(flight);
         } catch (RepositoryException e) {
@@ -450,6 +483,7 @@ public class RepositoryTests {
                 .bookDate(OffsetDateTime.now())
                 .totalAmount(50_000.00F)
                 .build();
+
         Ticket ticket = Ticket.builder()
                 .ticketNo("1111111111111")
                 .booking(booking)
@@ -468,6 +502,7 @@ public class RepositoryTests {
             bookingRepository.update(booking);
             System.out.println(e.getMessage());
         }
+
         try {
             ticketRepository.save(ticket);
         } catch (RepositoryException e) {
@@ -475,16 +510,19 @@ public class RepositoryTests {
             System.out.println(e.getMessage());
         }
 
+        // Create testing entity
         TicketFlightRepository ticketFlightRepository = new TicketFlightRepository(sessionManager);
         TicketFlightID ticketFlightId = TicketFlightID.builder()
                 .ticket(ticket)
                 .flight(flight)
                 .build();
+
         TicketFlight ticketFlight = TicketFlight.builder()
                 .id(ticketFlightId)
                 .fareConditions(seat.getFareConditions())
                 .amount(booking.getTotalAmount())
                 .build();
+
 
         // When save then should return saved ticketFlight from DB
         // When findById should return Optional with saved ticketFlight
@@ -516,6 +554,7 @@ public class RepositoryTests {
         assertThat(deleted).isTrue();
         assertThat(ticketFlightRepository.findById(ticketFlightId)).isEmpty();
 
+
         // Clean all created support entities
         ticketRepository.delete(ticket);
         bookingRepository.delete(booking);
@@ -532,12 +571,12 @@ public class RepositoryTests {
         AircraftRepository aircraftRepository = new AircraftRepository(sessionManager);
         SeatRepository seatRepository = new SeatRepository(sessionManager);
 
-        String aircraftId = "AIR";
         Aircraft aircraft = Aircraft.builder()
-                .aircraftCode(aircraftId)
+                .aircraftCode("AIR")
                 .model(LocalizedString.builder().ru("самолет").en("aircraft").build())
                 .range(1000)
                 .build();
+
         Seat seat = Seat.builder()
                 .id(SeatID.builder()
                         .aircraft(aircraft)
@@ -569,12 +608,14 @@ public class RepositoryTests {
                 .city(LocalizedString.builder().ru("отправления").en("departure").build())
                 .timezone("Europe/Moscow")
                 .build();
+
         Airport airportArrival = Airport.builder()
                 .airportCode("DOC")
                 .airportName(LocalizedString.builder().ru("куда").en("to").build())
                 .city(LocalizedString.builder().ru("назначения").en("arrival").build())
                 .timezone("Europe/Moscow")
                 .build();
+
         Flight flight = Flight.builder()
                 .flightNo("SOMEFL")
                 .aircraft(aircraft)
@@ -655,6 +696,8 @@ public class RepositoryTests {
             System.out.println(e.getMessage());
         }
 
+
+        // Create testing entity
         BoardingPassRepository boardingPassRepository = new BoardingPassRepository(sessionManager);
         BoardingPass boardingPass = BoardingPass.builder()
                 .id(ticketFlightId)
@@ -690,6 +733,7 @@ public class RepositoryTests {
         boolean deleted = boardingPassRepository.delete(found.get());
         assertThat(deleted).isTrue();
         assertThat(boardingPassRepository.findById(ticketFlightId)).isEmpty();
+
 
         // Clean all created support entities
         ticketFlightRepository.delete(ticketFlight);
