@@ -1,7 +1,14 @@
+import com.vr61v.entities.Aircraft;
 import com.vr61v.entities.Booking;
+import com.vr61v.entities.Seat;
 import com.vr61v.entities.Ticket;
 import com.vr61v.entities.embedded.ContactData;
+import com.vr61v.entities.embedded.LocalizedString;
+import com.vr61v.entities.embedded.SeatID;
+import com.vr61v.entities.types.FareCondition;
+import com.vr61v.repositories.AircraftRepository;
 import com.vr61v.repositories.BookingRepository;
+import com.vr61v.repositories.SeatRepository;
 import com.vr61v.repositories.TicketRepository;
 import com.vr61v.utils.RepositorySessionManager;
 import org.junit.Test;
@@ -13,10 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RepositoryTests {
 
+    private static final RepositorySessionManager sessionManager =
+            new RepositorySessionManager();
+
     @Test
     public void crudOperationsBookingRepository() {
         // Setup initial data
-        RepositorySessionManager sessionManager = new RepositorySessionManager();
         BookingRepository bookingRepository = new BookingRepository(sessionManager);
 
         String bookingId = "123456";
@@ -60,7 +69,6 @@ public class RepositoryTests {
     @Test
     public void crudOperationsTicketRepository() {
         // setup initial data
-        RepositorySessionManager sessionManager = new RepositorySessionManager();
         BookingRepository bookingRepository = new BookingRepository(sessionManager);
         TicketRepository ticketRepository = new TicketRepository(sessionManager);
 
@@ -114,7 +122,7 @@ public class RepositoryTests {
         assertThat(found.get().getPassengerName()).isEqualTo(updated.getPassengerName());
 
 
-        // When delete then should delete booking from DB
+        // When delete then should delete ticket from DB
         // When findById should return empty Optional
         boolean deleted = ticketRepository.delete(found.get());
         assertThat(deleted).isTrue();
@@ -125,4 +133,104 @@ public class RepositoryTests {
         assertThat(bookingRepository.delete(booking)).isTrue();
     }
 
+    @Test
+    public void crudOperationsAircraftRepository() {
+        // Setup initial data
+        AircraftRepository aircraftRepository = new AircraftRepository(sessionManager);
+
+        String aircraftId = "AIR";
+        Aircraft aircraft = Aircraft.builder()
+                .aircraftCode(aircraftId)
+                .model(LocalizedString.builder().ru("самолет").en("aircraft").build())
+                .range(1000)
+                .build();
+
+        // When save then should return saved aircraft from DB
+        // When findById should return Optional with saved aircraft
+        Aircraft saved = aircraftRepository.save(aircraft);
+        assertThat(saved).isEqualTo(aircraft);
+        assertThat(aircraftRepository.findById(aircraftId)).isPresent();
+
+
+        // When update then should update aircraft with new fields
+        Aircraft updated = Aircraft.builder()
+                .aircraftCode(aircraftId)
+                .model(LocalizedString.builder().ru("большой самолет").en("big aircraft").build())
+                .range(5000)
+                .build();
+
+        aircraftRepository.update(updated);
+
+
+        // When findById then return updated model and range
+        Optional<Aircraft> found = aircraftRepository.findById(aircraftId);
+        assertThat(found).isPresent();
+        assertThat(found.get().getModel()).isEqualTo(updated.getModel());
+        assertThat(found.get().getRange()).isEqualTo(updated.getRange());
+
+
+        // When delete then should delete aircraft from DB
+        // When findById should return empty Optional
+        boolean deleted = aircraftRepository.delete(found.get());
+        assertThat(deleted).isTrue();
+        assertThat(aircraftRepository.findById(aircraftId)).isEmpty();
+    }
+
+    @Test
+    public void crudOperationsSeatRepository() {
+        // Setup initial data
+        AircraftRepository aircraftRepository = new AircraftRepository(sessionManager);
+        SeatRepository seatRepository = new SeatRepository(sessionManager);
+
+        String aircraftId = "AIR";
+        Aircraft aircraft = Aircraft.builder()
+                .aircraftCode(aircraftId)
+                .model(LocalizedString.builder().ru("самолет").en("aircraft").build())
+                .range(1000)
+                .build();
+        aircraftRepository.save(aircraft);
+
+
+        SeatID seatId = SeatID.builder()
+                .seatNo("AAAA")
+                .aircraft(aircraft)
+                .build();
+
+        Seat seat = Seat.builder()
+                .id(seatId)
+                .fareConditions(FareCondition.COMFORT)
+                .build();
+
+        // When save then should return saved seat from DB
+        // When findById should return Optional with saved seat
+        Seat saved = seatRepository.save(seat);
+        assertThat(saved).isEqualTo(seat);
+        assertThat(seatRepository.findById(seatId)).isPresent();
+
+
+        // When update then should update seat with new field
+        Seat updated = Seat.builder()
+                .id(seatId)
+                .fareConditions(FareCondition.BUSINESS)
+                .build();
+
+        seatRepository.update(updated);
+
+
+        // When findById then return updated fareConditions
+        Optional<Seat> found = seatRepository.findById(seatId);
+        assertThat(found).isPresent();
+        assertThat(found.get().getFareConditions()).isEqualTo(updated.getFareConditions());
+
+
+        // When delete then should delete seat from DB
+        // When findById should return empty Optional
+        boolean deleted = seatRepository.delete(found.get());
+        assertThat(deleted).isTrue();
+        assertThat(seatRepository.findById(seatId)).isEmpty();
+
+
+        // Cleanup booking table
+        assertThat(aircraftRepository.delete(aircraft)).isTrue();
+    }
 }
