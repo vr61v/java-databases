@@ -2,8 +2,10 @@ import com.vr61v.entities.*;
 import com.vr61v.entities.embedded.ContactData;
 import com.vr61v.entities.embedded.LocalizedString;
 import com.vr61v.entities.embedded.SeatID;
+import com.vr61v.entities.embedded.TicketFlightID;
 import com.vr61v.entities.types.FareCondition;
 import com.vr61v.entities.types.FlightStatus;
+import com.vr61v.exceptions.RepositoryException;
 import com.vr61v.repositories.*;
 import com.vr61v.utils.RepositorySessionManager;
 import org.junit.Test;
@@ -75,7 +77,6 @@ public class RepositoryTests {
                 .build();
         bookingRepository.save(booking);
 
-
         ContactData contacts = ContactData.builder()
                 .email("email@gmail.com")
                 .phone("+79999999999")
@@ -124,7 +125,7 @@ public class RepositoryTests {
         assertThat(ticketRepository.findById(ticketId)).isEmpty();
 
 
-        // Cleanup booking table
+        // Clean all created support entities
         assertThat(bookingRepository.delete(booking)).isTrue();
     }
 
@@ -185,7 +186,6 @@ public class RepositoryTests {
                 .build();
         aircraftRepository.save(aircraft);
 
-
         SeatID seatId = SeatID.builder()
                 .seatNo("AAAA")
                 .aircraft(aircraft)
@@ -195,6 +195,7 @@ public class RepositoryTests {
                 .id(seatId)
                 .fareConditions(FareCondition.COMFORT)
                 .build();
+
 
         // When save then should return saved seat from DB
         // When findById should return Optional with saved seat
@@ -225,7 +226,7 @@ public class RepositoryTests {
         assertThat(seatRepository.findById(seatId)).isEmpty();
 
 
-        // Cleanup booking table
+        // Clean all created support entities
         assertThat(aircraftRepository.delete(aircraft)).isTrue();
     }
 
@@ -241,6 +242,7 @@ public class RepositoryTests {
                 .city(LocalizedString.builder().ru("город").en("city").build())
                 .timezone("Europe/Moscow")
                 .build();
+
 
         // When save then should return saved airport from DB
         // When findById should return Optional with saved airport
@@ -355,8 +357,348 @@ public class RepositoryTests {
         assertThat(deleted).isTrue();
         assertThat(flightRepository.findById(flightId)).isEmpty();
 
+
+        // Clean all created support entities
         aircraftRepository.delete(aircraft);
         airportRepository.delete(airportDeparture);
         airportRepository.delete(airportArrival);
+    }
+
+    @Test
+    public void crudOperationsTicketFlightRepository() {
+        // Setup initial data
+        AircraftRepository aircraftRepository = new AircraftRepository(sessionManager);
+        SeatRepository seatRepository = new SeatRepository(sessionManager);
+
+        String aircraftId = "AIR";
+        Aircraft aircraft = Aircraft.builder()
+                .aircraftCode(aircraftId)
+                .model(LocalizedString.builder().ru("самолет").en("aircraft").build())
+                .range(1000)
+                .build();
+        Seat seat = Seat.builder()
+                .id(SeatID.builder()
+                        .aircraft(aircraft)
+                        .seatNo("AAAA")
+                        .build()
+                )
+                .fareConditions(FareCondition.COMFORT)
+                .build();
+
+        try {
+            aircraftRepository.save(aircraft);
+        } catch (RepositoryException e) {
+            aircraftRepository.update(aircraft);
+            System.out.println(e.getMessage());
+        }
+        try {
+            seatRepository.save(seat);
+        } catch (RepositoryException e) {
+            seatRepository.update(seat);
+            System.out.println(e.getMessage());
+        }
+
+        AirportRepository airportRepository = new AirportRepository(sessionManager);
+        FlightRepository flightRepository = new FlightRepository(sessionManager);
+
+        Airport airportDeparture = Airport.builder()
+                .airportCode("COD")
+                .airportName(LocalizedString.builder().ru("откуда").en("from").build())
+                .city(LocalizedString.builder().ru("отправления").en("departure").build())
+                .timezone("Europe/Moscow")
+                .build();
+        Airport airportArrival = Airport.builder()
+                .airportCode("DOC")
+                .airportName(LocalizedString.builder().ru("куда").en("to").build())
+                .city(LocalizedString.builder().ru("назначения").en("arrival").build())
+                .timezone("Europe/Moscow")
+                .build();
+        Flight flight = Flight.builder()
+                .flightNo("SOMEFL")
+                .aircraft(aircraft)
+                .status(FlightStatus.SCHEDULED)
+                .departureAirport(airportDeparture)
+                .arrivalAirport(airportArrival)
+                .scheduledDeparture(OffsetDateTime.now())
+                .scheduledArrival(OffsetDateTime.now().plusHours(4))
+                .build();
+
+        try {
+            airportRepository.save(airportDeparture);
+        } catch (RepositoryException e) {
+            airportRepository.update(airportDeparture);
+            System.out.println(e.getMessage());
+        }
+        try {
+            airportRepository.save(airportArrival);
+        } catch (RepositoryException e) {
+            airportRepository.update(airportArrival);
+            System.out.println(e.getMessage());
+        }
+        try {
+            flightRepository.save(flight);
+        } catch (RepositoryException e) {
+            flightRepository.update(flight);
+            System.out.println(e.getMessage());
+        }
+
+        BookingRepository bookingRepository = new BookingRepository(sessionManager);
+        TicketRepository ticketRepository = new TicketRepository(sessionManager);
+
+        Booking booking = Booking.builder()
+                .bookRef("123456")
+                .bookDate(OffsetDateTime.now())
+                .totalAmount(50_000.00F)
+                .build();
+        Ticket ticket = Ticket.builder()
+                .ticketNo("1111111111111")
+                .booking(booking)
+                .passengerId("1234 123456")
+                .passengerName("SOME NAME")
+                .contactData(ContactData.builder()
+                        .email("email@gmail.com")
+                        .phone("+79999999999")
+                        .build()
+                )
+                .build();
+
+        try {
+            bookingRepository.save(booking);
+        } catch (RepositoryException e) {
+            bookingRepository.update(booking);
+            System.out.println(e.getMessage());
+        }
+        try {
+            ticketRepository.save(ticket);
+        } catch (RepositoryException e) {
+            ticketRepository.update(ticket);
+            System.out.println(e.getMessage());
+        }
+
+        TicketFlightRepository ticketFlightRepository = new TicketFlightRepository(sessionManager);
+        TicketFlightID ticketFlightId = TicketFlightID.builder()
+                .ticket(ticket)
+                .flight(flight)
+                .build();
+        TicketFlight ticketFlight = TicketFlight.builder()
+                .id(ticketFlightId)
+                .fareConditions(seat.getFareConditions())
+                .amount(booking.getTotalAmount())
+                .build();
+
+        // When save then should return saved ticketFlight from DB
+        // When findById should return Optional with saved ticketFlight
+        TicketFlight saved = ticketFlightRepository.save(ticketFlight);
+        assertThat(saved).isEqualTo(ticketFlight);
+        assertThat(ticketFlightRepository.findById(ticketFlightId)).isPresent();
+
+
+        // When update then should update ticketFlight with new fields
+        TicketFlight updated = TicketFlight.builder()
+                .id(ticketFlightId)
+                .fareConditions(FareCondition.BUSINESS)
+                .amount(booking.getTotalAmount() + 10_000.00F)
+                .build();
+
+        ticketFlightRepository.update(updated);
+
+
+        // When findById then return updated fareConditions and amount
+        Optional<TicketFlight> found = ticketFlightRepository.findById(ticketFlightId);
+        assertThat(found).isPresent();
+        assertThat(found.get().getFareConditions()).isEqualTo(updated.getFareConditions());
+        assertThat(found.get().getAmount()).isEqualTo(updated.getAmount());
+
+
+        // When delete then should delete ticketFlight from DB
+        // When findById should return empty Optional
+        boolean deleted = ticketFlightRepository.delete(found.get());
+        assertThat(deleted).isTrue();
+        assertThat(ticketFlightRepository.findById(ticketFlightId)).isEmpty();
+
+        // Clean all created support entities
+        ticketRepository.delete(ticket);
+        bookingRepository.delete(booking);
+        flightRepository.delete(flight);
+        airportRepository.delete(airportArrival);
+        airportRepository.delete(airportDeparture);
+        seatRepository.delete(seat);
+        aircraftRepository.delete(aircraft);
+    }
+
+    @Test
+    public void crudOperationsBoardingPassRepository() {
+        // Setup initial data
+        AircraftRepository aircraftRepository = new AircraftRepository(sessionManager);
+        SeatRepository seatRepository = new SeatRepository(sessionManager);
+
+        String aircraftId = "AIR";
+        Aircraft aircraft = Aircraft.builder()
+                .aircraftCode(aircraftId)
+                .model(LocalizedString.builder().ru("самолет").en("aircraft").build())
+                .range(1000)
+                .build();
+        Seat seat = Seat.builder()
+                .id(SeatID.builder()
+                        .aircraft(aircraft)
+                        .seatNo("AAAA")
+                        .build()
+                )
+                .fareConditions(FareCondition.COMFORT)
+                .build();
+
+        try {
+            aircraftRepository.save(aircraft);
+        } catch (RepositoryException e) {
+            aircraftRepository.update(aircraft);
+            System.out.println(e.getMessage());
+        }
+        try {
+            seatRepository.save(seat);
+        } catch (RepositoryException e) {
+            seatRepository.update(seat);
+            System.out.println(e.getMessage());
+        }
+
+        AirportRepository airportRepository = new AirportRepository(sessionManager);
+        FlightRepository flightRepository = new FlightRepository(sessionManager);
+
+        Airport airportDeparture = Airport.builder()
+                .airportCode("COD")
+                .airportName(LocalizedString.builder().ru("откуда").en("from").build())
+                .city(LocalizedString.builder().ru("отправления").en("departure").build())
+                .timezone("Europe/Moscow")
+                .build();
+        Airport airportArrival = Airport.builder()
+                .airportCode("DOC")
+                .airportName(LocalizedString.builder().ru("куда").en("to").build())
+                .city(LocalizedString.builder().ru("назначения").en("arrival").build())
+                .timezone("Europe/Moscow")
+                .build();
+        Flight flight = Flight.builder()
+                .flightNo("SOMEFL")
+                .aircraft(aircraft)
+                .status(FlightStatus.SCHEDULED)
+                .departureAirport(airportDeparture)
+                .arrivalAirport(airportArrival)
+                .scheduledDeparture(OffsetDateTime.now())
+                .scheduledArrival(OffsetDateTime.now().plusHours(4))
+                .build();
+
+        try {
+            airportRepository.save(airportDeparture);
+        } catch (RepositoryException e) {
+            airportRepository.update(airportDeparture);
+            System.out.println(e.getMessage());
+        }
+        try {
+            airportRepository.save(airportArrival);
+        } catch (RepositoryException e) {
+            airportRepository.update(airportArrival);
+            System.out.println(e.getMessage());
+        }
+        try {
+            flightRepository.save(flight);
+        } catch (RepositoryException e) {
+            flightRepository.update(flight);
+            System.out.println(e.getMessage());
+        }
+
+        BookingRepository bookingRepository = new BookingRepository(sessionManager);
+        TicketRepository ticketRepository = new TicketRepository(sessionManager);
+
+        Booking booking = Booking.builder()
+                .bookRef("123456")
+                .bookDate(OffsetDateTime.now())
+                .totalAmount(50_000.00F)
+                .build();
+        Ticket ticket = Ticket.builder()
+                .ticketNo("1111111111111")
+                .booking(booking)
+                .passengerId("1234 123456")
+                .passengerName("SOME NAME")
+                .contactData(ContactData.builder()
+                        .email("email@gmail.com")
+                        .phone("+79999999999")
+                        .build()
+                )
+                .build();
+
+        try {
+            bookingRepository.save(booking);
+        } catch (RepositoryException e) {
+            bookingRepository.update(booking);
+            System.out.println(e.getMessage());
+        }
+        try {
+            ticketRepository.save(ticket);
+        } catch (RepositoryException e) {
+            ticketRepository.update(ticket);
+            System.out.println(e.getMessage());
+        }
+
+        TicketFlightRepository ticketFlightRepository = new TicketFlightRepository(sessionManager);
+        TicketFlightID ticketFlightId = TicketFlightID.builder()
+                .ticket(ticket)
+                .flight(flight)
+                .build();
+        TicketFlight ticketFlight = TicketFlight.builder()
+                .id(ticketFlightId)
+                .fareConditions(seat.getFareConditions())
+                .amount(booking.getTotalAmount())
+                .build();
+
+        try {
+            ticketFlightRepository.save(ticketFlight);
+        } catch (RepositoryException e) {
+            ticketFlightRepository.update(ticketFlight);
+            System.out.println(e.getMessage());
+        }
+
+        BoardingPassRepository boardingPassRepository = new BoardingPassRepository(sessionManager);
+        BoardingPass boardingPass = BoardingPass.builder()
+                .id(ticketFlightId)
+                .boardingNo(1)
+                .seatNo(seat.getId().getSeatNo())
+                .build();
+
+        // When save then should return saved boardingPass from DB
+        // When findById should return Optional with saved boardingPass
+        BoardingPass saved = boardingPassRepository.save(boardingPass);
+        assertThat(saved).isEqualTo(boardingPass);
+        assertThat(boardingPassRepository.findById(ticketFlightId)).isPresent();
+
+
+        // When update then should update boardingPass with new fields
+        BoardingPass updated = BoardingPass.builder()
+                .id(ticketFlightId)
+                .boardingNo(2)
+                .seatNo(seat.getId().getSeatNo())
+                .build();
+
+        boardingPassRepository.update(updated);
+
+
+        // When findById then return updated boardingNo
+        Optional<BoardingPass> found = boardingPassRepository.findById(ticketFlightId);
+        assertThat(found).isPresent();
+        assertThat(found.get().getBoardingNo()).isEqualTo(updated.getBoardingNo());
+
+
+        // When delete then should delete boardingPass from DB
+        // When findById should return empty Optional
+        boolean deleted = boardingPassRepository.delete(found.get());
+        assertThat(deleted).isTrue();
+        assertThat(boardingPassRepository.findById(ticketFlightId)).isEmpty();
+
+        // Clean all created support entities
+        ticketFlightRepository.delete(ticketFlight);
+        ticketRepository.delete(ticket);
+        bookingRepository.delete(booking);
+        flightRepository.delete(flight);
+        airportRepository.delete(airportArrival);
+        airportRepository.delete(airportDeparture);
+        seatRepository.delete(seat);
+        aircraftRepository.delete(aircraft);
     }
 }
