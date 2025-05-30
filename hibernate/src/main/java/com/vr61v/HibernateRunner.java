@@ -1,7 +1,7 @@
 package com.vr61v;
 
 import com.vr61v.entities.Booking;
-import com.vr61v.repositories.BookingRepository;
+import com.vr61v.repositories.impl.BookingRepository;
 import com.vr61v.utils.RepositorySessionManager;
 
 import java.time.OffsetDateTime;

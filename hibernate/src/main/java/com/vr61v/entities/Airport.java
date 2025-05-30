@@ -32,12 +32,6 @@ public class Airport {
     @Column(name = "city", nullable = false)
     private LocalizedString city;
 
-/*
-    todo: разобраться как можно парсить Point, пока что в табличке эта колонка должна быть удалена
-     @Column(name = "coordinates", columnDefinition = "Point", nullable = false)
-     private Point coordinates;
- */
-
     @Column(name = "timezone", nullable = false)
     private String timezone;
 

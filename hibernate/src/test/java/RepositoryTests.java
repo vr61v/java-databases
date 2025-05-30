@@ -6,7 +6,7 @@ import com.vr61v.entities.embedded.TicketFlightID;
 import com.vr61v.entities.types.FareCondition;
 import com.vr61v.entities.types.FlightStatus;
 import com.vr61v.exceptions.RepositoryException;
-import com.vr61v.repositories.*;
+import com.vr61v.repositories.impl.*;
 import com.vr61v.utils.RepositorySessionManager;
 import org.junit.Test;
 
