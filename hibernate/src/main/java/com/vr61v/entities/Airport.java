@@ -35,10 +35,10 @@ public class Airport {
     @Column(name = "timezone", nullable = false)
     private String timezone;
 
-    @OneToMany(mappedBy = "arrivalAirport")
+    @OneToMany(mappedBy = "arrivalAirport", fetch = FetchType.EAGER)
     private Set<Flight> arrivals;
 
-    @OneToMany(mappedBy = "departureAirport")
+    @OneToMany(mappedBy = "departureAirport", fetch = FetchType.EAGER)
     private Set<Flight> departures;
 
 }

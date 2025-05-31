@@ -16,7 +16,7 @@ public abstract class Repository<T, ID> {
         this.clazz = clazz;
     }
 
-    public T save(T entity) {
+    public boolean save(T entity) {
         if (entity == null) {
             throw new RepositoryException("Entity is null");
         }
@@ -25,11 +25,10 @@ public abstract class Repository<T, ID> {
             session.beginTransaction();
             session.persist(entity);
             session.getTransaction().commit();
+            return true;
         } catch (Exception e) {
-            throw new RepositoryException(e.getMessage());
+            return false;
         }
-
-        return entity;
     }
 
     public Optional<T> findById(ID id) {

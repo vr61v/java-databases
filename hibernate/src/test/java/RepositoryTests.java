@@ -33,11 +33,9 @@ public class RepositoryTests {
                 .build();
 
 
-        // When save then should return saved booking from DB
-        // When findById should return Optional with saved booking
-        Booking saved = bookingRepository.save(booking);
-        assertThat(saved).isEqualTo(booking);
-        assertThat(bookingRepository.findById(bookingId)).isPresent();
+        // When save then should save booking in DB
+        boolean saved = bookingRepository.save(booking);
+        assertThat(saved).isTrue();
 
 
         // When update then should update booking with new field
@@ -50,10 +48,11 @@ public class RepositoryTests {
         bookingRepository.update(updated);
 
 
-        // When findById then return updated totalAmount
+        // When findById then return updated totalAmount and all fetched OneToMany
         Optional<Booking> found = bookingRepository.findById(bookingId);
         assertThat(found).isPresent();
         assertThat(found.get().getTotalAmount()).isEqualTo(updated.getTotalAmount());
+        assertThat(found.get().getTickets()).isNotNull();
 
 
         // When delete then should delete booking from DB
@@ -99,10 +98,8 @@ public class RepositoryTests {
 
 
         // When save then should return saved ticket from DB
-        // When findById should return Optional with saved ticket
-        Ticket saved = ticketRepository.save(ticket);
-        assertThat(saved).isEqualTo(ticket);
-        assertThat(ticketRepository.findById(ticketId)).isPresent();
+        boolean saved = ticketRepository.save(ticket);
+        assertThat(saved).isTrue();
 
 
         // When update then should update ticket with new fields
@@ -122,6 +119,13 @@ public class RepositoryTests {
         assertThat(found).isPresent();
         assertThat(found.get().getPassengerId()).isEqualTo(updated.getPassengerId());
         assertThat(found.get().getPassengerName()).isEqualTo(updated.getPassengerName());
+
+
+        // When findById bookingRepository then return booking with current ticket
+        Optional<Booking> foundBooking = bookingRepository.findById(booking.getBookRef());
+        assertThat(foundBooking).isPresent();
+        assertThat(foundBooking.get().getTickets()).isNotNull();
+        assertThat(foundBooking.get().getTickets()).size().isEqualTo(1);
 
 
         // When delete then should delete ticket from DB
@@ -146,11 +150,10 @@ public class RepositoryTests {
                 .range(1000)
                 .build();
 
+
         // When save then should return saved aircraft from DB
-        // When findById should return Optional with saved aircraft
-        Aircraft saved = aircraftRepository.save(aircraft);
-        assertThat(saved).isEqualTo(aircraft);
-        assertThat(aircraftRepository.findById(aircraftId)).isPresent();
+        boolean saved = aircraftRepository.save(aircraft);
+        assertThat(saved).isTrue();
 
 
         // When update then should update aircraft with new fields
@@ -163,11 +166,13 @@ public class RepositoryTests {
         aircraftRepository.update(updated);
 
 
-        // When findById then return updated model and range
+        // When findById then return updated model, range and all fetched OneToMany
         Optional<Aircraft> found = aircraftRepository.findById(aircraftId);
         assertThat(found).isPresent();
         assertThat(found.get().getModel()).isEqualTo(updated.getModel());
         assertThat(found.get().getRange()).isEqualTo(updated.getRange());
+        assertThat(found.get().getSeats()).isNotNull();
+        assertThat(found.get().getFlights()).isNotNull();
 
 
         // When delete then should delete aircraft from DB
@@ -209,10 +214,8 @@ public class RepositoryTests {
 
 
         // When save then should return saved seat from DB
-        // When findById should return Optional with saved seat
-        Seat saved = seatRepository.save(seat);
-        assertThat(saved).isEqualTo(seat);
-        assertThat(seatRepository.findById(seatId)).isPresent();
+        boolean saved = seatRepository.save(seat);
+        assertThat(saved).isTrue();
 
 
         // When update then should update seat with new field
@@ -228,6 +231,13 @@ public class RepositoryTests {
         Optional<Seat> found = seatRepository.findById(seatId);
         assertThat(found).isPresent();
         assertThat(found.get().getFareConditions()).isEqualTo(updated.getFareConditions());
+
+
+        // When findById aircraftRepository then return aircraft with current seat
+        Optional<Aircraft> foundAircraft = aircraftRepository.findById(aircraft.getAircraftCode());
+        assertThat(foundAircraft).isPresent();
+        assertThat(foundAircraft.get().getSeats()).isNotNull();
+        assertThat(foundAircraft.get().getSeats()).hasSize(1);
 
 
         // When delete then should delete seat from DB
@@ -255,10 +265,8 @@ public class RepositoryTests {
 
 
         // When save then should return saved airport from DB
-        // When findById should return Optional with saved airport
-        Airport saved = airportRepository.save(airport);
-        assertThat(saved).isEqualTo(airport);
-        assertThat(airportRepository.findById(airportCod)).isPresent();
+        boolean saved = airportRepository.save(airport);
+        assertThat(saved).isTrue();
 
 
         // When update then should update airport with new fields
@@ -272,11 +280,13 @@ public class RepositoryTests {
         airportRepository.update(updated);
 
 
-        // When findById then return updated name and city
+        // When findById then return updated name and city and all fetched OneToMany
         Optional<Airport> found = airportRepository.findById(airportCod);
         assertThat(found).isPresent();
         assertThat(found.get().getAirportName()).isEqualTo(updated.getAirportName());
         assertThat(found.get().getCity()).isEqualTo(updated.getCity());
+        assertThat(found.get().getDepartures()).isNotNull();
+        assertThat(found.get().getArrivals()).isNotNull();
 
 
         // When delete then should delete airport from DB
@@ -303,6 +313,7 @@ public class RepositoryTests {
             aircraftRepository.update(aircraft);
             System.out.println(e.getMessage());
         }
+
 
         AirportRepository airportRepository = new AirportRepository(sessionManager);
         String airportCodDeparture = "COD";
@@ -350,11 +361,10 @@ public class RepositoryTests {
 
 
         // When save then should return saved flight from DB
-        // When findById should return Optional with saved flight
-        Flight saved = flightRepository.save(flight);
-        Integer flightId = saved.getFlightId();
-        assertThat(saved).isEqualTo(flight);
-        assertThat(flightRepository.findById(flightId)).isPresent();
+        boolean saved = flightRepository.save(flight);
+        Integer flightId = flight.getFlightId();
+        assertThat(saved).isTrue();
+
 
         // When update then should update flight with new fields
         Flight updated = Flight.builder()
@@ -377,6 +387,27 @@ public class RepositoryTests {
         assertThat(found).isPresent();
         assertThat(found.get().getStatus()).isEqualTo(updated.getStatus());
         assertThat(found.get().getActualDeparture()).isEqualTo(updated.getActualDeparture());
+
+
+        // When findById aircraftRepository then return aircraft with current flight
+        Optional<Aircraft> foundAircraft = aircraftRepository.findById(aircraftId);
+        assertThat(foundAircraft).isPresent();
+        assertThat(foundAircraft.get().getFlights()).isNotNull();
+        assertThat(foundAircraft.get().getFlights()).hasSize(1);
+
+
+        // When findById airportRepository then return departureAirport with current flight
+        Optional<Airport> foundDepartureAirport = airportRepository.findById(airportCodDeparture);
+        assertThat(foundDepartureAirport).isPresent();
+        assertThat(foundDepartureAirport.get().getDepartures()).isNotNull();
+        assertThat(foundDepartureAirport.get().getDepartures()).hasSize(1);
+
+
+        // When findById airportRepository then return foundArrivalAirport with current flight
+        Optional<Airport> foundArrivalAirport = airportRepository.findById(airportCodArrival);
+        assertThat(foundArrivalAirport).isPresent();
+        assertThat(foundArrivalAirport.get().getArrivals()).isNotNull();
+        assertThat(foundArrivalAirport.get().getArrivals()).hasSize(1);
 
 
         // When delete then should delete aircraft from DB
@@ -427,6 +458,7 @@ public class RepositoryTests {
             System.out.println(e.getMessage());
         }
 
+
         AirportRepository airportRepository = new AirportRepository(sessionManager);
         FlightRepository flightRepository = new FlightRepository(sessionManager);
 
@@ -475,6 +507,7 @@ public class RepositoryTests {
             System.out.println(e.getMessage());
         }
 
+
         BookingRepository bookingRepository = new BookingRepository(sessionManager);
         TicketRepository ticketRepository = new TicketRepository(sessionManager);
 
@@ -510,6 +543,7 @@ public class RepositoryTests {
             System.out.println(e.getMessage());
         }
 
+
         // Create testing entity
         TicketFlightRepository ticketFlightRepository = new TicketFlightRepository(sessionManager);
         TicketFlightID ticketFlightId = TicketFlightID.builder()
@@ -525,10 +559,8 @@ public class RepositoryTests {
 
 
         // When save then should return saved ticketFlight from DB
-        // When findById should return Optional with saved ticketFlight
-        TicketFlight saved = ticketFlightRepository.save(ticketFlight);
-        assertThat(saved).isEqualTo(ticketFlight);
-        assertThat(ticketFlightRepository.findById(ticketFlightId)).isPresent();
+        boolean saved = ticketFlightRepository.save(ticketFlight);
+        assertThat(saved).isTrue();
 
 
         // When update then should update ticketFlight with new fields
@@ -599,6 +631,7 @@ public class RepositoryTests {
             System.out.println(e.getMessage());
         }
 
+
         AirportRepository airportRepository = new AirportRepository(sessionManager);
         FlightRepository flightRepository = new FlightRepository(sessionManager);
 
@@ -645,6 +678,7 @@ public class RepositoryTests {
             System.out.println(e.getMessage());
         }
 
+
         BookingRepository bookingRepository = new BookingRepository(sessionManager);
         TicketRepository ticketRepository = new TicketRepository(sessionManager);
 
@@ -678,6 +712,7 @@ public class RepositoryTests {
             System.out.println(e.getMessage());
         }
 
+
         TicketFlightRepository ticketFlightRepository = new TicketFlightRepository(sessionManager);
         TicketFlightID ticketFlightId = TicketFlightID.builder()
                 .ticket(ticket)
@@ -705,11 +740,10 @@ public class RepositoryTests {
                 .seatNo(seat.getId().getSeatNo())
                 .build();
 
+
         // When save then should return saved boardingPass from DB
-        // When findById should return Optional with saved boardingPass
-        BoardingPass saved = boardingPassRepository.save(boardingPass);
-        assertThat(saved).isEqualTo(boardingPass);
-        assertThat(boardingPassRepository.findById(ticketFlightId)).isPresent();
+        boolean saved = boardingPassRepository.save(boardingPass);
+        assertThat(saved).isTrue();
 
 
         // When update then should update boardingPass with new fields

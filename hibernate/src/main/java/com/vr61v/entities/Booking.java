@@ -26,7 +26,7 @@ public class Booking {
     @Column(name = "total_amount", nullable = false)
     private Float totalAmount;
 
-    @OneToMany(mappedBy = "booking")
+    @OneToMany(mappedBy = "booking", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Ticket> tickets;
 
 }

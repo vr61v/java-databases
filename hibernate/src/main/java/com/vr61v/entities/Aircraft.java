@@ -30,10 +30,10 @@ public class Aircraft {
     @Column(name = "range", nullable = false)
     private Integer range;
 
-    @OneToMany(mappedBy = "id.aircraft")
+    @OneToMany(mappedBy = "id.aircraft", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Seat> seats;
 
-    @OneToMany(mappedBy = "aircraft")
+    @OneToMany(mappedBy = "aircraft", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Flight> flights;
 
 }
