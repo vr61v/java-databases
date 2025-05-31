@@ -114,7 +114,7 @@ Booking booking = Booking.builder()
         .build();
 
 // Сохраняем сущность
-Booking saved = bookingRepository.save(booking);
+boolean saved = bookingRepository.save(booking);
 
 // Получаем сущность
 Booking found = bookingRepository.findById(booking.getBookRef());
@@ -128,13 +128,13 @@ Booking updatedTotalAmount = Booking.builder()
 Booking updated = bookingRepository.update(updatedTotalAmount);
 
 // Удаляем сущность
-Boolean isDeleted = bookingRepository.delete(booking);
+boolean isDeleted = bookingRepository.delete(booking);
 ```
 
 ## API
 
 ## Repository
-* T save(T entity) - сохранение сущности, возвращает entity в состоянии detach
-* Optional<T> findById(ID id) - поиск сущности по ее ID, в случае неудачи возвращает Optional.empty(), иначе entity в состоянии detach
-* T update(T entity) - обновление всей сущности, возвращает entity в состоянии detach
-* boolean delete(T entity) - удаление сущности, возвращает false в случае неудачи, иначе true, переданная сущность получает статус removed
+* boolean save(T entity) - сохранение сущности, возвращает true в случае успеха, иначе false
+* Optional<T> findById(ID id) - поиск сущности по ее ID, в случае отсутствия сущности в БД возвращает Optional.empty()
+* T update(T entity) - обновление всей сущности
+* boolean delete(T entity) - удаление сущности, возвращает true в случае успеха, иначе false
