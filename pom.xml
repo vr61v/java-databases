@@ -12,6 +12,7 @@
     <modules>
         <module>jdbc</module>
         <module>hibernate</module>
+        <module>spring-data</module>
     </modules>
 
 </project>

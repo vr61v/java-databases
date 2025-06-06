@@ -14,3 +14,4 @@
 ### PROJECT ###
 /jdbc/postgres
 /hibernate/postgres
+/spring-data/postgres
