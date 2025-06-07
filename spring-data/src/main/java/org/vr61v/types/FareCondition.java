@@ -1,4 +1,4 @@
-package org.vr61v.entities.types;
+package org.vr61v.types;
 
 public enum FareCondition {
     ECONOMY,

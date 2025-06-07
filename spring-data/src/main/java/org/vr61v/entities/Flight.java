@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.vr61v.entities.types.FlightStatus;
+import org.vr61v.types.FlightStatus;
 
 import java.time.OffsetDateTime;
 

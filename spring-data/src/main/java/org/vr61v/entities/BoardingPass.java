@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.vr61v.entities.embedded.TicketFlightID;
+import org.vr61v.embedded.TicketFlightID;
 
 @Data
 @NoArgsConstructor

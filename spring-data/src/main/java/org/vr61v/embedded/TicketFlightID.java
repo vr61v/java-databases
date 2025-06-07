@@ -1,4 +1,4 @@
-package org.vr61v.entities.embedded;
+package org.vr61v.embedded;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;

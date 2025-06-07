@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.vr61v.entities.embedded.SeatID;
-import org.vr61v.entities.types.FareCondition;
+import org.vr61v.embedded.SeatID;
+import org.vr61v.types.FareCondition;
 
 @Data
 @NoArgsConstructor
