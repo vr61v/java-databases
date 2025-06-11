@@ -1,9 +1,12 @@
 package org.vr61v.dtos;
 
+import lombok.Data;
+
 import java.time.OffsetDateTime;
 
-public record BookingDto (
-        String bookRef,
-        OffsetDateTime bookDate,
-        Float totalAmount
-) { }
+@Data
+public class BookingDto {
+    private String bookRef;
+    private OffsetDateTime bookDate;
+    private Float totalAmount;
+}

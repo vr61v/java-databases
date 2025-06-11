@@ -19,7 +19,7 @@ public abstract class CrudService<E, ID> {
         return repository.save(entity);
     }
 
-    public List<E> createAll(List<E> entities) {
+    public List<E> createAll(Iterable<E> entities) {
         return repository.saveAll(entities);
     }
 
@@ -27,7 +27,7 @@ public abstract class CrudService<E, ID> {
         return repository.save(entity);
     }
 
-    public List<E> updateAll(List<E> entities) {
+    public List<E> updateAll(Iterable<E> entities) {
         return repository.saveAll(entities);
     }
 

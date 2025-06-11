@@ -1,9 +1,11 @@
 package org.vr61v.dtos;
 
+import lombok.Data;
 import org.vr61v.embedded.LocalizedString;
 
-public record AircraftDto (
-        String aircraftCode,
-        LocalizedString model,
-        Integer range
-) { }
+@Data
+public class AircraftDto {
+    private String aircraftCode;
+    private LocalizedString model;
+    private Integer range;
+}

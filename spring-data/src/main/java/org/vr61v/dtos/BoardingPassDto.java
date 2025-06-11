@@ -1,8 +1,12 @@
 package org.vr61v.dtos;
 
-public record BoardingPassDto (
-        String ticketNo,
-        String flightNo,
-        Integer boardingNo,
-        String seatNo
-) { }
+import lombok.Data;
+
+@Data
+public class BoardingPassDto {
+    private String ticketNo;
+    private String flightNo;
+    private Integer boardingNo;
+    private String seatN;
+}
+

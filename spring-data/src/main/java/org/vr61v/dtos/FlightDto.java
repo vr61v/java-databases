@@ -1,20 +1,23 @@
 package org.vr61v.dtos;
 
+import lombok.Data;
 import org.vr61v.types.FlightStatus;
 
 import java.time.OffsetDateTime;
 
-public record FlightDto (
-        Integer flightId,
-        String flightNo,
-        FlightStatus status,
+@Data
+public class FlightDto {
+    private Integer flightId;
+    private String flightNo;
+    private FlightStatus status;
 
-        AircraftDto aircraft,
-        AirportDto departureAirport,
-        AirportDto arrivalAirport,
+    private AircraftDto aircraft;
+    private AirportDto departureAirport;
+    private AirportDto arrivalAirport;
 
-        OffsetDateTime scheduledDeparture,
-        OffsetDateTime scheduledArrival,
-        OffsetDateTime actualDeparture,
-        OffsetDateTime actualArrival
-) { }
+    private OffsetDateTime scheduledDeparture;
+    private OffsetDateTime scheduledArrival;
+    private OffsetDateTime actualDeparture;
+    private OffsetDateTime actualArrival;
+}
+
