@@ -10,14 +10,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.vr61v.entities.Aircraft;
 
-import java.io.Serializable;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Embeddable
-public class SeatID implements Serializable {
+public class SeatID {
 
     @ManyToOne
     @JoinColumn(name = "aircraft_code", nullable = false)

@@ -9,7 +9,7 @@ import java.util.Optional;
 @Transactional
 public abstract class CrudService<E, ID> {
 
-    private final ListCrudRepository<E, ID> repository;
+    protected final ListCrudRepository<E, ID> repository;
 
     public CrudService(ListCrudRepository<E, ID> repository) {
         this.repository = repository;

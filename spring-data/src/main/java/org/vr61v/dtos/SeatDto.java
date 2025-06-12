@@ -5,6 +5,7 @@ import org.vr61v.types.FareCondition;
 
 @Data
 public class SeatDto {
+    private String aircraftCode;
     private String seatNo;
-    private FareCondition fareCondition;
+    private FareCondition fareConditions;
 }

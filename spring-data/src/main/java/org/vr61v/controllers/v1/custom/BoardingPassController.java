@@ -112,7 +112,10 @@ public class BoardingPassController {
     }
 
     @GetMapping("/{id}/{no}")
-    public ResponseEntity<?> findById(@PathVariable("id") String id, @PathVariable("no") Integer no) {
+    public ResponseEntity<?> findById(
+            @PathVariable("id") String id,
+            @PathVariable("no") Integer no
+    ) {
         TicketFlightID entityId = createId(id, no);
         Optional<BoardingPass> found = boardingPassCrudService.findById(entityId);
         return found.isEmpty() ?
@@ -136,7 +139,10 @@ public class BoardingPassController {
     }
 
     @DeleteMapping("/{id}/{no}")
-    public ResponseEntity<?> delete(@PathVariable("id") String id, @PathVariable("no") Integer no) {
+    public ResponseEntity<?> delete(
+            @PathVariable("id") String id,
+            @PathVariable("no") Integer no
+    ) {
         TicketFlightID entityId = createId(id, no);
         Optional<BoardingPass> found = boardingPassCrudService.findById(entityId);
         if (found.isEmpty()) {
