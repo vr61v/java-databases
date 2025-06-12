@@ -6,4 +6,4 @@ import org.vr61v.entities.BoardingPass;
 
 @Mapper(componentModel = "spring")
 public interface BoardingPassMapper
-        extends BaseMapper<BoardingPassDto, BoardingPass> { }
+        extends BaseMapper<BoardingPass, BoardingPassDto> { }

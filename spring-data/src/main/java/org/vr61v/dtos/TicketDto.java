@@ -6,8 +6,8 @@ import org.vr61v.embedded.ContactData;
 @Data
 public class TicketDto {
     private String ticketNo;
-    private String bookRef;
+    private BookingDto booking;
     private String passengerId;
     private String passengerName;
-    private ContactData contactDat;
+    private ContactData contactData;
 }

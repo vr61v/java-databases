@@ -7,6 +7,6 @@ public class BoardingPassDto {
     private String ticketNo;
     private String flightNo;
     private Integer boardingNo;
-    private String seatN;
+    private String seatNo;
 }
 

@@ -11,7 +11,8 @@ import org.vr61v.services.crud.AirportCrudService;
 
 @RestController
 @RequestMapping("/api/v1/airports")
-public class AirportCrudController extends CrudController<Airport, AirportDto, String> {
+public class AirportCrudController
+        extends CrudController<Airport, AirportDto, String> {
 
     public AirportCrudController(
             AirportCrudService airportCrudService,
@@ -24,4 +25,5 @@ public class AirportCrudController extends CrudController<Airport, AirportDto, S
     protected void setId(Airport entity, String id) {
         entity.setAirportCode(id);
     }
+
 }

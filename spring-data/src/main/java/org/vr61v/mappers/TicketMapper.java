@@ -6,4 +6,4 @@ import org.vr61v.entities.Ticket;
 
 @Mapper(componentModel = "spring")
 public interface TicketMapper
-        extends BaseMapper<TicketDto, Ticket> { }
+        extends BaseMapper<Ticket, TicketDto> { }
