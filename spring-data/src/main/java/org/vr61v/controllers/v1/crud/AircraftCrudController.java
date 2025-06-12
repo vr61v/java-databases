@@ -21,7 +21,7 @@ public class AircraftCrudController
     }
 
     @Override
-    protected void setId(Aircraft entity, String s) {
-        entity.setAircraftCode(s);
+    protected void setId(Aircraft entity, String id) {
+        entity.setAircraftCode(id);
     }
 }
