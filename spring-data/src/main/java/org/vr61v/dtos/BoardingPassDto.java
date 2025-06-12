@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class BoardingPassDto {
     private String ticketNo;
-    private String flightNo;
+    private Integer flightId;
     private Integer boardingNo;
     private String seatNo;
 }

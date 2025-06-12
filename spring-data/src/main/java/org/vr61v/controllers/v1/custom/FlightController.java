@@ -24,8 +24,8 @@ public class FlightController {
             FlightCrudService flightCrudService,
             FlightMapper flightMapper
     ) {
-        crudService = flightCrudService;
-        mapper = flightMapper;
+        this.crudService = flightCrudService;
+        this.mapper = flightMapper;
     }
 
     @PostMapping("/{no}")
