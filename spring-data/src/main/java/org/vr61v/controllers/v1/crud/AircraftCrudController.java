@@ -16,12 +16,17 @@ public class AircraftCrudController extends CrudController<Aircraft, AircraftDto
             AircraftCrudService aircraftCrudService,
             AircraftMapper aircraftMapper
     ) {
-        super(aircraftCrudService, aircraftMapper);
+        super(aircraftCrudService, aircraftMapper, "aircraft");
     }
 
     @Override
     protected void setId(Aircraft entity, String id) {
         entity.setAircraftCode(id);
+    }
+
+    @Override
+    protected String getId(Aircraft entity) {
+        return entity.getAircraftCode();
     }
 
 }

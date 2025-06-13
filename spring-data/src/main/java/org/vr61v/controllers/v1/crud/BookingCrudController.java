@@ -16,12 +16,17 @@ public class BookingCrudController extends CrudController<Booking, BookingDto, S
             BookingCrudService bookingCrudService,
             BookingMapper bookingMapper
     ) {
-        super(bookingCrudService, bookingMapper);
+        super(bookingCrudService, bookingMapper, "booking");
     }
 
     @Override
     protected void setId(Booking entity, String id) {
         entity.setBookRef(id);
+    }
+
+    @Override
+    protected String getId(Booking entity) {
+        return entity.getBookRef();
     }
 
 }

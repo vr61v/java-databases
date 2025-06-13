@@ -16,12 +16,17 @@ public class AirportCrudController extends CrudController<Airport, AirportDto, S
             AirportCrudService airportCrudService,
             AirportMapper airportMapper
     ) {
-        super(airportCrudService, airportMapper);
+        super(airportCrudService, airportMapper, "airport");
     }
 
     @Override
     protected void setId(Airport entity, String id) {
         entity.setAirportCode(id);
+    }
+
+    @Override
+    protected String getId(Airport entity) {
+        return entity.getAirportCode();
     }
 
 }
