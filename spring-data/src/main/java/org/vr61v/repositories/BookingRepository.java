@@ -5,7 +5,4 @@ import org.springframework.stereotype.Repository;
 import org.vr61v.entities.Booking;
 
 @Repository
-public interface BookingRepository
-        extends JpaRepository<Booking, String> {
-
-}
+public interface BookingRepository extends JpaRepository<Booking, String> { }

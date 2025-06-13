@@ -5,7 +5,4 @@ import org.springframework.stereotype.Repository;
 import org.vr61v.entities.Ticket;
 
 @Repository
-public interface TicketRepository
-        extends JpaRepository<Ticket, String> {
-
-}
+public interface TicketRepository extends JpaRepository<Ticket, String> { }

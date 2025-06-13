@@ -6,10 +6,4 @@ import org.vr61v.entities.Flight;
 
 @Mapper(componentModel = "spring")
 public interface FlightMapper
-        extends BaseMapper<Flight, FlightDto> {
-
-    FlightDto toDto(Flight entity);
-
-    Flight toEntity(FlightDto dto);
-
-}
+        extends BaseMapper<Flight, FlightDto> { }

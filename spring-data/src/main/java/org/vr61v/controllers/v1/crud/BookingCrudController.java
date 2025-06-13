@@ -8,11 +8,9 @@ import org.vr61v.entities.Booking;
 import org.vr61v.mappers.BookingMapper;
 import org.vr61v.services.crud.BookingCrudService;
 
-
 @RestController
 @RequestMapping("api/v1/bookings")
-public class BookingCrudController
-        extends CrudController<Booking, BookingDto, String> {
+public class BookingCrudController extends CrudController<Booking, BookingDto, String> {
 
     public BookingCrudController(
             BookingCrudService bookingCrudService,

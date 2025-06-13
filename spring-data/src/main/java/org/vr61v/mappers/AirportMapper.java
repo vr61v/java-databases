@@ -5,5 +5,4 @@ import org.vr61v.dtos.AirportDto;
 import org.vr61v.entities.Airport;
 
 @Mapper(componentModel = "spring")
-public interface AirportMapper
-        extends BaseMapper<Airport, AirportDto> { }
+public interface AirportMapper extends BaseMapper<Airport, AirportDto> { }

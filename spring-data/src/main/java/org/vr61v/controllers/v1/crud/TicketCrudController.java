@@ -8,11 +8,9 @@ import org.vr61v.entities.Ticket;
 import org.vr61v.mappers.TicketMapper;
 import org.vr61v.services.crud.TicketCrudService;
 
-
 @RestController
 @RequestMapping("api/v1/tickets")
-public class TicketCrudController
-        extends CrudController<Ticket, TicketDto, String> {
+public class TicketCrudController extends CrudController<Ticket, TicketDto, String> {
 
     public TicketCrudController(
             TicketCrudService ticketCrudService,

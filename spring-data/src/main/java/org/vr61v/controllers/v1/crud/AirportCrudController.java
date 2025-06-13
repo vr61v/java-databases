@@ -8,11 +8,9 @@ import org.vr61v.entities.Airport;
 import org.vr61v.mappers.AirportMapper;
 import org.vr61v.services.crud.AirportCrudService;
 
-
 @RestController
 @RequestMapping("/api/v1/airports")
-public class AirportCrudController
-        extends CrudController<Airport, AirportDto, String> {
+public class AirportCrudController extends CrudController<Airport, AirportDto, String> {
 
     public AirportCrudController(
             AirportCrudService airportCrudService,

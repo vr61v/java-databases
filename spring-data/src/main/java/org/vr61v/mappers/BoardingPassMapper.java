@@ -6,8 +6,7 @@ import org.vr61v.dtos.BoardingPassDto;
 import org.vr61v.entities.BoardingPass;
 
 @Mapper(componentModel = "spring")
-public interface BoardingPassMapper
-        extends BaseMapper<BoardingPass, BoardingPassDto> {
+public interface BoardingPassMapper extends BaseMapper<BoardingPass, BoardingPassDto> {
 
     @Mapping(target = "ticketNo", source = "entity.id.ticket.ticketNo")
     @Mapping(target = "flightId", source = "entity.id.flight.flightId")

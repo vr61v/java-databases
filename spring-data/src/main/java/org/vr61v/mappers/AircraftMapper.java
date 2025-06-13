@@ -5,5 +5,4 @@ import org.vr61v.dtos.AircraftDto;
 import org.vr61v.entities.Aircraft;
 
 @Mapper(componentModel = "spring")
-public interface AircraftMapper
-        extends BaseMapper<Aircraft, AircraftDto> { }
+public interface AircraftMapper extends BaseMapper<Aircraft, AircraftDto> { }

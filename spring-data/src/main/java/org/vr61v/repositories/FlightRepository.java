@@ -5,7 +5,4 @@ import org.springframework.stereotype.Repository;
 import org.vr61v.entities.Flight;
 
 @Repository
-public interface FlightRepository
-        extends JpaRepository<Flight, Integer> {
-
-}
+public interface FlightRepository extends JpaRepository<Flight, Integer> { }

@@ -10,6 +10,19 @@ import org.vr61v.services.CrudService;
 import java.util.List;
 import java.util.Optional;
 
+
+/**
+ * Abstract base controller providing CRUD (Create, Read, Update, Delete) operations
+ * for entities with both single and batch processing support.
+ * <p>
+ * This controller handles conversion between entities and DTOs automatically using
+ * provided mapper and delegates business logic to the underlying service.
+ *
+ * @param <E>   the entity type this controller manages
+ * @param <DTO> the Data Transfer Object type used for input/output
+ * @param <ID>  the type of entity's identifier (only simple types are supported,
+ *             composite IDs require custom implementation)
+ */
 @RequiredArgsConstructor
 public abstract class CrudController<E, DTO, ID> {
 
@@ -17,6 +30,15 @@ public abstract class CrudController<E, DTO, ID> {
 
     private final BaseMapper<E, DTO> mapper;
 
+    /**
+     * Sets the unique identifier for the entity before save or update it.
+     * <p>
+     * Implementation must assign the provided ID to the entity's primary key field.
+     * The specific field to set depends on the entity type.
+     *
+     * @param entity the entity instance to modify
+     * @param id the identifier to assign to the entity
+     */
     protected abstract void setId(E entity, ID id);
 
     @PostMapping("/{id}")
@@ -90,7 +112,6 @@ public abstract class CrudController<E, DTO, ID> {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     @DeleteMapping
     public ResponseEntity<?> deleteAll(@RequestBody List<ID> ids) {
         List<E> found = crudService.findAllById(ids);
@@ -104,4 +125,5 @@ public abstract class CrudController<E, DTO, ID> {
         crudService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 }
