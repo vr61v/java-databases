@@ -49,7 +49,7 @@ public abstract class CrudController<E, DTO, ID> {
 
     @PostMapping("/{id}")
     public ResponseEntity<?> create(@PathVariable ID id, @Valid @RequestBody DTO body) {
-        log.info("Handling request to create a new {} entity", entityName);
+        log.info("Handling request to create a new {} entity with id:{}", entityName, id);
         E entity = mapper.toEntity(body);
         setId(entity, id);
         log.info("Creating a new {} entity with id:{}, body:{}", entityName, id, body);
@@ -61,9 +61,8 @@ public abstract class CrudController<E, DTO, ID> {
 
     @PostMapping
     public ResponseEntity<?> createAll(@Valid @RequestBody List<DTO> body) {
-        log.info("Handling request to create all {} entities", entityName);
+        log.info("Handling request to create all size:{} {} entities", body.size(), entityName);
         List<E> entities = body.stream().map(mapper::toEntity).toList();
-        log.info("Creating all new {} entities with body size:{}", entityName, body.size());
         List<E> created = crudService.createAll(entities);
         List<DTO> dtos = created.stream().map(mapper::toDto).toList();
         log.info("Success creating all new {} entities with dto size:{}", entityName, dtos.size());
@@ -72,7 +71,7 @@ public abstract class CrudController<E, DTO, ID> {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable ID id, @Valid @RequestBody DTO body) {
-        log.info("Handling request to update the {} entity", entityName);
+        log.info("Handling request to update the {} entity with id:{}", entityName, id);
         E entity = mapper.toEntity(body);
         setId(entity, id);
         log.info("Updating the {} entity with id:{}, body:{}", entityName, id, body);
@@ -84,9 +83,8 @@ public abstract class CrudController<E, DTO, ID> {
 
     @PutMapping
     public ResponseEntity<?> updateAll(@Valid @RequestBody List<DTO> body) {
-        log.info("Handling request to update all {} entities", entityName);
+        log.info("Handling request to update all size:{} {} entities", body.size(), entityName);
         List<E> entities = body.stream().map(mapper::toEntity).toList();
-        log.info("Updating all {} entities with body size:{}", entityName, body.size());
         List<E> updated = crudService.updateAll(entities);
         List<DTO> dtos = updated.stream().map(mapper::toDto).toList();
         log.info("Success updating all {} entities with dto size:{}", entityName, dtos.size());
@@ -102,10 +100,10 @@ public abstract class CrudController<E, DTO, ID> {
             log.info("Success finding the {} entity with id:{}, dto:{}", entityName, id, dto);
             return new ResponseEntity<>(dto, HttpStatus.OK);
         } else {
-            log.warn("No entity with id:{} found", id);
+            log.warn("No {} entity with id:{} found", entityName, id);
             return new ResponseEntity<>(
-                    String.format("No entity with id:%s found", id),
-                    HttpStatus.BAD_REQUEST
+                    String.format("No %s entity with id:%s found", entityName, id),
+                    HttpStatus.NOT_FOUND
             );
         }
     }
@@ -121,8 +119,8 @@ public abstract class CrudController<E, DTO, ID> {
         } else {
             log.warn("No {} entities found", entityName);
             return new ResponseEntity<>(
-                    "No entities found",
-                    HttpStatus.BAD_REQUEST
+                    String.format("No %s entities found", entityName),
+                    HttpStatus.NOT_FOUND
             );
         }
     }
@@ -131,31 +129,31 @@ public abstract class CrudController<E, DTO, ID> {
     public ResponseEntity<?> delete(@PathVariable ID id) {
         log.info("Handling request to delete the {} entity with id:{}", entityName, id);
         Optional<E> found = crudService.findById(id);
-        if (found.isEmpty()) {
-            log.warn("No entity with id:{} found", id);
+        if (found.isPresent()) {
+            log.info("Deleting the {} entity with id:{}", entityName, id);
+            crudService.deleteById(id);
+            log.info("Success deleting the {} entity with id:{}", entityName, id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            log.warn("No {} entity with id:{} found", entityName, id);
             return new ResponseEntity<>(
-                    String.format("No entity with id:%s found", id),
+                    String.format("No %s entity with id:%s found", entityName, id),
                     HttpStatus.NOT_FOUND
             );
         }
-
-        log.info("Deleting the {} entity with id:{}", entityName, id);
-        crudService.deleteById(id);
-        log.info("Success deleting the {} entity with id:{}", entityName, id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping
     public ResponseEntity<?> deleteAll(@RequestBody Set<ID> ids) {
-        log.info("Handling request to delete all {} entities", entityName);
+        log.info("Handling request to delete all size:{} {} entities", ids.size(), entityName);
         List<E> found = crudService.findAllById(ids);
         if (found.size() != ids.size()) {
             found.stream()
                     .map(this::getId)
                     .forEach(ids::remove);
-            log.warn("No entity with ids:{} found", ids);
+            log.warn("No {} entities with ids:{} found", entityName, ids);
             return new ResponseEntity<>(
-                    String.format("No entity with ids:%s found", ids),
+                    String.format("No %s entities with ids:%s found", entityName, ids),
                     HttpStatus.NOT_FOUND
             );
         }

@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+// todo: @Valid
+// todo: LOGGING
 @RestController
 @RequestMapping("api/v1/aircrafts/{code}/seats")
 public class SeatController {
