@@ -1,5 +1,6 @@
 package org.vr61v.controllers.v1.custom;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,6 @@ import org.vr61v.services.crud.FlightCrudService;
 import java.util.List;
 import java.util.Optional;
 
-// todo: @Valid
 @Slf4j
 @RestController
 @RequestMapping("api/v1/flights")
@@ -31,7 +31,7 @@ public class FlightController {
     }
 
     @PostMapping("/{no}")
-    public ResponseEntity<?> create(@PathVariable String no, @RequestBody FlightDto body) {
+    public ResponseEntity<?> create(@PathVariable String no, @Valid @RequestBody FlightDto body) {
         log.info("Handling request to create the flight entity with no:{}", no);
         Flight entity = mapper.toEntity(body);
         entity.setFlightNo(no);
@@ -43,7 +43,7 @@ public class FlightController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAll(@RequestBody List<FlightDto> body) {
+    public ResponseEntity<?> createAll(@Valid @RequestBody List<FlightDto> body) {
         log.info("Handling request to create all size:{} flight entities", body.size());
         List<Flight> entities = body.stream().map(mapper::toEntity).toList();
         List<Flight> created = crudService.createAll(entities);
@@ -53,7 +53,7 @@ public class FlightController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody FlightDto body) {
+    public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody FlightDto body) {
         log.info("Handling request to update the flight entity with id:{}", id);
         Flight entity = mapper.toEntity(body);
         entity.setFlightId(id);
@@ -65,7 +65,7 @@ public class FlightController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateAll(@RequestBody List<FlightDto> body) {
+    public ResponseEntity<?> updateAll(@Valid @RequestBody List<FlightDto> body) {
         log.info("Handling request to update all size:{} flight entities", body.size());
         List<Flight> entities = body.stream().map(mapper::toEntity).toList();
         List<Flight> updated = crudService.updateAll(entities);

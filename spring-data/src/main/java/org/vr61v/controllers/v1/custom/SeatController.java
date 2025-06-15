@@ -1,5 +1,7 @@
 package org.vr61v.controllers.v1.custom;
 
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-// todo: @Valid
-// todo: LOGGING
+@Slf4j
 @RestController
 @RequestMapping("api/v1/aircrafts/{code}/seats")
 public class SeatController {
 
-    private final SeatCrudService seatCrudService;
+    private final SeatCrudService crudService;
 
     private final SeatCustomService seatCustomService;
 
@@ -36,7 +37,7 @@ public class SeatController {
             AircraftCrudService aircraftCrudService,
             SeatMapper seatMapper
     ) {
-        this.seatCrudService = seatCrudService;
+        this.crudService = seatCrudService;
         this.seatCustomService = seatCustomService;
         this.aircraftCrudService = aircraftCrudService;
         this.mapper = seatMapper;
@@ -74,46 +75,56 @@ public class SeatController {
     public ResponseEntity<?> create(
             @PathVariable("code") String code,
             @PathVariable("no") String no,
-            @RequestBody SeatDto body
+            @Valid @RequestBody SeatDto body
     ) {
+        log.info("Handling request to create a new seat entity with code:{}, no:{}", code, no);
         Seat entity = getRequestEntity(code, no, body);
-        Seat created = seatCrudService.create(entity);
+        log.info("Creating a new seat entity with code:{}, no:{}, body:{}", code, no, body);
+        Seat created = crudService.create(entity);
         SeatDto dto = mapper.toDto(created);
+        log.info("Success creating a new seat entity with code:{}, no:{}, dto:{}", code, no, dto);
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
 
     @PostMapping
     public ResponseEntity<?> createAll(
             @PathVariable("code") String code,
-            @RequestBody List<SeatDto> body
+            @Valid @RequestBody List<SeatDto> body
     ) {
+        log.info("Handling request to create all size:{} seat entities", body.size());
         List<Seat> entity = getRequestEntityList(code, body);
-        List<Seat> created = seatCrudService.createAll(entity);
-        List<SeatDto> dto = created.stream().map(mapper::toDto).toList();
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        List<Seat> created = crudService.createAll(entity);
+        List<SeatDto> dtos = created.stream().map(mapper::toDto).toList();
+        log.info("Success creating all new seat entities with dto size:{}", dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.CREATED);
     }
 
     @PutMapping("/{no}")
     public ResponseEntity<?> update(
             @PathVariable("code") String code,
             @PathVariable("no") String no,
-            @RequestBody SeatDto body
+            @Valid @RequestBody SeatDto body
     ) {
+        log.info("Handling request to update the seat entity with code:{}, no:{}", code, no);
         Seat entity = getRequestEntity(code, no, body);
-        Seat updated = seatCrudService.update(entity);
+        log.info("Updating the seat entity with code:{}, no:{}, body:{}", code, no, body);
+        Seat updated = crudService.update(entity);
         SeatDto dto = mapper.toDto(updated);
+        log.info("Success updating the seat entity with code:{}, no:{}, dto:{}", code, no, dto);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<?> updateAll(
             @PathVariable("code") String code,
-            @RequestBody List<SeatDto> body
+            @Valid @RequestBody List<SeatDto> body
     ) {
+        log.info("Handling request to update all size:{} seat entities", body.size());
         List<Seat> entity = getRequestEntityList(code, body);
-        List<Seat> created = seatCrudService.updateAll(entity);
-        List<SeatDto> dto = created.stream().map(mapper::toDto).toList();
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        List<Seat> created = crudService.updateAll(entity);
+        List<SeatDto> dtos = created.stream().map(mapper::toDto).toList();
+        log.info("Success updating all seat entities with dto size:{}", dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.CREATED);
     }
 
     @GetMapping("/{no}")
@@ -122,25 +133,36 @@ public class SeatController {
             @PathVariable("no") String no
     ) {
         SeatID entityId = createId(code, no);
-        Optional<Seat> found = seatCrudService.findById(entityId);
-        return found.isEmpty() ?
-                new ResponseEntity<>(
-                        String.format("entity with code:%s and no:%s not found", code, no),
-                        HttpStatus.BAD_REQUEST
-                ) :
-                new ResponseEntity<>(mapper.toDto(found.get()), HttpStatus.OK);
+        log.info("Handling request to find the seat entity with id:{}", entityId);
+        Optional<Seat> found = crudService.findById(entityId);
+        if (found.isPresent()) {
+            SeatDto dto = mapper.toDto(found.get());
+            log.info("Success finding the seat entity with id:{}, dto:{}", entityId, dto);
+            return new ResponseEntity<>(dto, HttpStatus.OK);
+        } else {
+            log.warn("No seat entity with id:{} found", entityId);
+            return new ResponseEntity<>(
+                    String.format("No seat entity with id:%s found", entityId),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 
     @GetMapping
     public ResponseEntity<?> findAll(@PathVariable String code) {
-        List<Seat> found = seatCustomService.findSeatsByAircraftCode(code);
+        log.info("Handling request to find all seat entities");
+        List<Seat> found = crudService.findAll();
         List<SeatDto> dtos = found.stream().map(mapper::toDto).toList();
-        return found.isEmpty() ?
-                new ResponseEntity<>(
-                        "entities not found",
-                        HttpStatus.BAD_REQUEST
-                ) :
-                new ResponseEntity<>(dtos, HttpStatus.OK);
+        if (!dtos.isEmpty()) {
+            log.info("Success finding all seat entities with dto size:{}", dtos.size());
+            return new ResponseEntity<>(dtos, HttpStatus.OK);
+        } else {
+            log.warn("No seat entities found");
+            return new ResponseEntity<>(
+                    "No seat entities found",
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 
     @DeleteMapping("/{no}")
@@ -149,21 +171,33 @@ public class SeatController {
             @PathVariable("no") String no
     ) {
         SeatID entityId = createId(code, no);
-        Optional<Seat> found = seatCrudService.findById(entityId);
-        if (found.isEmpty()) {
-            new ResponseEntity<>(
-                    String.format("entity with code:%s and no:%s not found", code, no),
-                    HttpStatus.BAD_REQUEST
+        log.info("Handling request to delete the seat entity with id:{}", entityId);
+        Optional<Seat> found = crudService.findById(entityId);
+        if (found.isPresent()) {
+            log.info("Deleting the seat entity with id:{}", entityId);
+            crudService.deleteById(entityId);
+            log.info("Success deleting the seat entity with id:{}", entityId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            log.warn("No seat entity with id:{} found", entityId);
+            return new ResponseEntity<>(
+                    String.format("No seat entity with id:%s found", entityId),
+                    HttpStatus.NOT_FOUND
             );
         }
-
-        seatCrudService.deleteById(entityId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping
     public ResponseEntity<?> deleteAll(@PathVariable("code") String code) {
-        seatCustomService.deleteSeatsByAircraftCode(code);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        log.info("Handling request to delete all seats from aircraft with code:{}", code);
+        Optional<Aircraft> found = aircraftCrudService.findById(code);
+        if (found.isPresent()) {
+            log.info("Deleting the seat entities from aircraft with code:{}", code);
+            seatCustomService.deleteSeatsByAircraftCode(code);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            log.warn("No aircraft with code:{} found", code);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

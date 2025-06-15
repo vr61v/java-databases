@@ -1,6 +1,7 @@
 package org.vr61v.controllers.v1.custom;
 
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,6 @@ import org.vr61v.services.crud.TicketCrudService;
 
 import java.util.*;
 
-// todo: @Valid
 @Slf4j
 @RestController
 @RequestMapping("api/v1/boardingpass")
@@ -76,7 +76,7 @@ public class BoardingPassController {
     public ResponseEntity<?> create(
             @PathVariable String id,
             @PathVariable("no") Integer no,
-            @RequestBody BoardingPassDto body
+            @Valid @RequestBody BoardingPassDto body
     ) {
         log.info("Handling request to create a new boarding pass entity with id:{}, no:{}", id, no);
         BoardingPass entity = getRequestEntity(id, no, body);
@@ -88,7 +88,7 @@ public class BoardingPassController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAll(@RequestBody List<BoardingPassDto> body) {
+    public ResponseEntity<?> createAll(@Valid @RequestBody List<BoardingPassDto> body) {
         log.info("Handling request to create all size:{} boarding pass entities", body.size());
         List<BoardingPass> entities = getRequestEntityList(body);
         List<BoardingPass> created = boardingPassCrudService.createAll(entities);
@@ -101,7 +101,7 @@ public class BoardingPassController {
     public ResponseEntity<?> update(
             @PathVariable String id,
             @PathVariable("no") Integer no,
-            @RequestBody BoardingPassDto body
+            @Valid @RequestBody BoardingPassDto body
     ) {
         log.info("Handling request to update the boarding pass entity with id:{}", id);
         BoardingPass entity = getRequestEntity(id, no, body);
@@ -113,7 +113,7 @@ public class BoardingPassController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateAll(@RequestBody List<BoardingPassDto> body) {
+    public ResponseEntity<?> updateAll(@Valid @RequestBody List<BoardingPassDto> body) {
         log.info("Handling request to update all size:{} boarding pass entities", body.size());
         List<BoardingPass> entities = getRequestEntityList(body);
         List<BoardingPass> updated = boardingPassCrudService.updateAll(entities);
