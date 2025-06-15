@@ -10,8 +10,7 @@ import org.vr61v.entities.Seat;
 import java.util.List;
 
 @Repository
-public interface SeatRepository
-        extends JpaRepository<Seat, SeatID> {
+public interface SeatRepository extends JpaRepository<Seat, SeatID> {
 
     @Query("SELECT s FROM Seat s WHERE s.id.aircraft.aircraftCode = :aircraftCode")
     List<Seat> findSeatsByAircraftCode(String aircraftCode);

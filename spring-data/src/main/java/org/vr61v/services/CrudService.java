@@ -6,6 +6,16 @@ import org.springframework.data.repository.ListCrudRepository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Abstract base service providing CRUD (Create, Read, Update, Delete) operations
+ * for entities with both single and batch processing support.
+ * <p>
+ * This service delegates persistence operations to the underlying Spring Data repository
+ * and provides transactional boundaries for all operations.
+ *
+ * @param <E>  the entity type this service manages
+ * @param <ID> the type of entity's identifier (supports both single and compound keys)
+ */
 @Transactional
 public abstract class CrudService<E, ID> {
 

@@ -34,7 +34,6 @@ public class Flight {
     @JoinColumn(name = "aircraft_code", nullable = false)
     private Aircraft aircraft;
 
-
     @ManyToOne
     @JoinColumn(name = "departure_airport", nullable = false)
     private Airport departureAirport;
@@ -42,7 +41,6 @@ public class Flight {
     @ManyToOne
     @JoinColumn(name = "arrival_airport", nullable = false)
     private Airport arrivalAirport;
-
 
     @Column(name = "scheduled_departure")
     private OffsetDateTime scheduledDeparture;

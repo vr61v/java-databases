@@ -1,0 +1,2167 @@
+{
+	"info": {
+		"_postman_id": "cf04fa5e-9973-4ac0-b40a-dda50ff8e55c",
+		"name": "spring-data",
+		"description": "Для некоторых эндпоинтов созданы запросы INIT и REMOVE, которые служат для создания родительских сущностей и их удаления.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33829406"
+	},
+	"item": [
+		{
+			"name": "api/v1/aircrafts",
+			"item": [
+				{
+					"name": "findAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/CR2",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"CR2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"model\":{\n        \"en\": \"business model 0\",\n        \"ru\": \"бизнес модель 0\"\n    },\n    \"range\":{{$randomInt}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createAll",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"aircraftCode\": \"111\",\n    \"model\":{\n        \"en\": \"business model 1\",\n        \"ru\": \"бизнес модель 1\"\n    },\n    \"range\": {{$randomInt}}\n}, {\n    \"aircraftCode\": \"222\",\n    \"model\":{\n        \"en\": \"business model 2\",\n        \"ru\": \"бизнес модель 2\"\n    },\n    \"range\": {{$randomInt}}\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"model\":{\n        \"en\": \"Updated business model 0\",\n        \"ru\": \"Обновленная бизнес модель 0\"\n    },\n    \"range\": 9999\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateAll",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"aircraftCode\": \"111\",\n    \"model\":{\n        \"en\": \"Updated business model 1\",\n        \"ru\": \"Обновленная бизнес модель 1\"\n    },\n    \"range\": 9999\n}, {\n    \"aircraftCode\": \"222\",\n    \"model\":{\n        \"en\": \"Updated business model 2\",\n        \"ru\": \"Обновленная бизнес модель 2\"\n    },\n    \"range\": 9999\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteAll",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\"111\", \"222\"]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "api/v1/aircrafts/000/seats",
+			"item": [
+				{
+					"name": "INIT AIRCRAFT",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"model\":{\n        \"en\": \"business model 0\",\n        \"ru\": \"бизнес модель 0\"\n    },\n    \"range\":{{$randomInt}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/CR2/seats",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"CR2",
+								"seats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/CR2/seats/1A",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"CR2",
+								"seats",
+								"1A"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fareConditions\": \"ECONOMY\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000/seats/1A",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000",
+								"seats",
+								"1A"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createAll",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"seatNo\": \"2A\",\n    \"fareConditions\": \"ECONOMY\"\n}, {\n    \"seatNo\": \"3A\",\n    \"fareConditions\": \"ECONOMY\"\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000/seats",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000",
+								"seats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fareConditions\": \"BUSINESS\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000/seats/1A",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000",
+								"seats",
+								"1A"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateAll",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"seatNo\": \"2A\",\n    \"fareConditions\": \"BUSINESS\"\n}, {\n    \"seatNo\": \"3A\",\n    \"fareConditions\": \"BUSINESS\"\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000/seats",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000",
+								"seats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"seatNo\": \"2A\",\n    \"fareConditions\": \"BUSINESS\"\n}, {\n    \"seatNo\": \"3A\",\n    \"fareConditions\": \"BUSINESS\"\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000/seats/1A",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000",
+								"seats",
+								"1A"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteAll",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000/seats",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000",
+								"seats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REMOVE AIRCRAFT",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "api/v1/airports",
+			"item": [
+				{
+					"name": "findAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/airports",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"airports"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/airports/YKS",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"airports",
+								"YKS"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"airportName\": {\n        \"en\": \"Airport name 0\",\n        \"ru\": \"Название аэропорта 0\"\n    },\n    \"city\":{\n        \"en\": \"Some kind of city\",\n        \"ru\": \"Какой-то город\"\n    },\n    \"timezone\": \"Europe/Moscow\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/airports/000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"airports",
+								"000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createAll",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"airportCode\": \"111\",\n    \"airportName\": {\n        \"en\": \"Airport name 1\",\n        \"ru\": \"Название аэропорта 1\"\n    },\n    \"city\":{\n        \"en\": \"Some kind of city\",\n        \"ru\": \"Какой-то город\"\n    },\n    \"timezone\": \"Europe/Moscow\"\n}, {\n    \"airportCode\": \"222\",\n    \"airportName\": {\n        \"en\": \"Airport name 2\",\n        \"ru\": \"Название аэропорта 2\"\n    },\n    \"city\":{\n        \"en\": \"Some kind of city\",\n        \"ru\": \"Какой-то город\"\n    },\n    \"timezone\": \"Europe/Moscow\"\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/airports",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"airports"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"airportName\": {\n        \"en\": \"Updated airport name 0\",\n        \"ru\": \"Обновленное название аэропорта 0\"\n    },\n    \"city\":{\n        \"en\": \"Some updated kind of city\",\n        \"ru\": \"Какой-то обновленный город\"\n    },\n    \"timezone\": \"Europe/Moscow\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/airports/000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"airports",
+								"000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateAll",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"airportCode\": \"111\",\n    \"airportName\": {\n        \"en\": \"Updated airport name 1\",\n        \"ru\": \"Обновленное название аэропорта 1\"\n    },\n    \"city\":{\n        \"en\": \"Some updated kind of city\",\n        \"ru\": \"Какой-то обновленный город\"\n    },\n    \"timezone\": \"Europe/Moscow\"\n}, {\n    \"airportCode\": \"222\",\n    \"airportName\": {\n        \"en\": \"Updated airport name 2\",\n        \"ru\": \"Обновленное название аэропорта 2\"\n    },\n    \"city\":{\n        \"en\": \"Some updated kind of city\",\n        \"ru\": \"Какой-то обновленный город\"\n    },\n    \"timezone\": \"Europe/Moscow\"\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/airports",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"airports"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/airports/000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"airports",
+								"000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteAll",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\"111\", \"222\"]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/airports",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"airports"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "api/v1/bookings",
+			"item": [
+				{
+					"name": "findAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/bookings",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/bookings/00000F",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"00000F"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bookDate\": {{$timestamp}},\n    \"totalAmount\": 10000.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/bookings/000000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createAll",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"bookRef\": \"111111\",\n    \"bookDate\": {{$timestamp}},\n    \"totalAmount\": 20000.00\n}, {\n    \"bookRef\": \"222222\",\n    \"bookDate\": {{$timestamp}},\n    \"totalAmount\": 30000.00\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/bookings",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bookDate\": {{$timestamp}},\n    \"totalAmount\": 11111.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/bookings/000000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateAll",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"bookRef\": \"111111\",\n    \"bookDate\": {{$timestamp}},\n    \"totalAmount\": 22222.00\n}, {\n    \"bookRef\": \"222222\",\n    \"bookDate\": {{$timestamp}},\n    \"totalAmount\": 33333.00\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/bookings",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/bookings/000000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteAll",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\"111111\", \"222222\"]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/bookings",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "api/v1/tickets",
+			"item": [
+				{
+					"name": "findAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/tickets",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tickets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/tickets/0005432000284",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tickets",
+								"0005432000284"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"booking\": {\n        \"bookRef\": \"00000F\",\n        \"bookDate\": \"2017-07-05T00:12:00Z\",\n        \"totalAmount\": 265700.0\n    },\n    \"passengerId\": \"0000 000000\",\n    \"passengerName\": \"PASSENGER NAME 0\",\n    \"contactData\": {\n        \"phone\": \"+70000000000\",\n        \"email\": null\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/tickets/0000000000000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tickets",
+								"0000000000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createAll",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"ticketNo\": \"1111111111111\",\n    \"booking\": {\n        \"bookRef\": \"00000F\",\n        \"bookDate\": \"2017-07-05T00:12:00Z\",\n        \"totalAmount\": 265700.0\n    },\n    \"passengerId\": \"1111 111111\",\n    \"passengerName\": \"PASSENGER NAME 1\",\n    \"contactData\": {\n        \"phone\": \"+71111111111\",\n        \"email\": null\n    }\n}, {\n    \"ticketNo\": \"2222222222222\",\n    \"booking\": {\n        \"bookRef\": \"00000F\",\n        \"bookDate\": \"2017-07-05T00:12:00Z\",\n        \"totalAmount\": 265700.0\n    },\n    \"passengerId\": \"2222 222222\",\n    \"passengerName\": \"PASSENGER NAME 2\",\n    \"contactData\": {\n        \"phone\": \"+72222222222\",\n        \"email\": null\n    }\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/tickets",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tickets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"booking\": {\n        \"bookRef\": \"00000F\",\n        \"bookDate\": \"2017-07-05T00:12:00Z\",\n        \"totalAmount\": 265700.0\n    },\n    \"passengerId\": \"0000 000000\",\n    \"passengerName\": \"UPDATED PASSENGER NAME 0\",\n    \"contactData\": {\n        \"phone\": \"+79008006050\",\n        \"email\": null\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/tickets/0000000000000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tickets",
+								"0000000000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateAll",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"ticketNo\": \"1111111111111\",\n    \"booking\": {\n        \"bookRef\": \"00000F\",\n        \"bookDate\": \"2017-07-05T00:12:00Z\",\n        \"totalAmount\": 265700.0\n    },\n    \"passengerId\": \"1111 111111\",\n    \"passengerName\": \"UPDATED PASSENGER NAME 1\",\n    \"contactData\": {\n        \"phone\": \"+79118116151\",\n        \"email\": null\n    }\n}, {\n    \"ticketNo\": \"2222222222222\",\n    \"booking\": {\n        \"bookRef\": \"00000F\",\n        \"bookDate\": \"2017-07-05T00:12:00Z\",\n        \"totalAmount\": 265700.0\n    },\n    \"passengerId\": \"2222 222222\",\n    \"passengerName\": \"UPDATED PASSENGER NAME 2\",\n    \"contactData\": {\n        \"phone\": \"+79228226252\",\n        \"email\": null\n    }\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/tickets",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tickets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/tickets/0000000000000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tickets",
+								"0000000000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteAll",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\"1111111111111\", \"2222222222222\"]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/tickets",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tickets"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "api/v1/flights",
+			"item": [
+				{
+					"name": "findAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights/214901",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights",
+								"214901"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"SCHEDULED\",\n    \"aircraft\": {\n        \"aircraftCode\": \"CR2\",\n        \"model\": {\n            \"en\": \"Bombardier CRJ-200\",\n            \"ru\": \"Бомбардье CRJ-200\"\n        },\n        \"range\": 2700\n    },\n    \"departureAirport\": {\n        \"airportCode\": \"SKX\",\n        \"airportName\": {\n            \"en\": \"Saransk Airport\",\n            \"ru\": \"Саранск\"\n        },\n        \"city\": {\n            \"en\": \"Saransk\",\n            \"ru\": \"Саранск\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"arrivalAirport\": {\n        \"airportCode\": \"SVO\",\n        \"airportName\": {\n            \"en\": \"Sheremetyevo International Airport\",\n            \"ru\": \"Шереметьево\"\n        },\n        \"city\": {\n            \"en\": \"Moscow\",\n            \"ru\": \"Москва\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"scheduledDeparture\": \"2020-06-12T10:25:00Z\",\n    \"scheduledArrival\": \"2020-06-12T20:25:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights/000000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights",
+								"000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createAll",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"flightNo\": \"111111\",\n    \"status\": \"SCHEDULED\",\n    \"aircraft\": {\n        \"aircraftCode\": \"CR2\",\n        \"model\": {\n            \"en\": \"Bombardier CRJ-200\",\n            \"ru\": \"Бомбардье CRJ-200\"\n        },\n        \"range\": 2700\n    },\n    \"departureAirport\": {\n        \"airportCode\": \"SKX\",\n        \"airportName\": {\n            \"en\": \"Saransk Airport\",\n            \"ru\": \"Саранск\"\n        },\n        \"city\": {\n            \"en\": \"Saransk\",\n            \"ru\": \"Саранск\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"arrivalAirport\": {\n        \"airportCode\": \"SVO\",\n        \"airportName\": {\n            \"en\": \"Sheremetyevo International Airport\",\n            \"ru\": \"Шереметьево\"\n        },\n        \"city\": {\n            \"en\": \"Moscow\",\n            \"ru\": \"Москва\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"scheduledDeparture\": \"2021-06-12T16:25:00Z\",\n    \"scheduledArrival\": \"2021-06-12T20:25:00Z\"\n}, {\n    \"flightNo\": \"222222\",\n    \"status\": \"SCHEDULED\",\n    \"aircraft\": {\n        \"aircraftCode\": \"CR2\",\n        \"model\": {\n            \"en\": \"Bombardier CRJ-200\",\n            \"ru\": \"Бомбардье CRJ-200\"\n        },\n        \"range\": 2700\n    },\n    \"departureAirport\": {\n        \"airportCode\": \"SKX\",\n        \"airportName\": {\n            \"en\": \"Saransk Airport\",\n            \"ru\": \"Саранск\"\n        },\n        \"city\": {\n            \"en\": \"Saransk\",\n            \"ru\": \"Саранск\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"arrivalAirport\": {\n        \"airportCode\": \"SVO\",\n        \"airportName\": {\n            \"en\": \"Sheremetyevo International Airport\",\n            \"ru\": \"Шереметьево\"\n        },\n        \"city\": {\n            \"en\": \"Moscow\",\n            \"ru\": \"Москва\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"scheduledDeparture\": \"2022-06-12T16:25:00Z\",\n    \"scheduledArrival\": \"2022-06-12T20:25:00Z\"\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"flightNo\": \"000000\",\n    \"status\": \"ARRIVED\",\n    \"aircraft\": {\n        \"aircraftCode\": \"CR2\",\n        \"model\": {\n            \"en\": \"Bombardier CRJ-200\",\n            \"ru\": \"Бомбардье CRJ-200\"\n        },\n        \"range\": 2700\n    },\n    \"departureAirport\": {\n        \"airportCode\": \"SKX\",\n        \"airportName\": {\n            \"en\": \"Saransk Airport\",\n            \"ru\": \"Саранск\"\n        },\n        \"city\": {\n            \"en\": \"Saransk\",\n            \"ru\": \"Саранск\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"arrivalAirport\": {\n        \"airportCode\": \"SVO\",\n        \"airportName\": {\n            \"en\": \"Sheremetyevo International Airport\",\n            \"ru\": \"Шереметьево\"\n        },\n        \"city\": {\n            \"en\": \"Moscow\",\n            \"ru\": \"Москва\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"scheduledDeparture\": \"2020-06-12T10:25:01Z\",\n    \"scheduledArrival\": \"2020-06-12T20:25:01Z\",\n    \"actualDeparture\": \"2020-06-12T11:25:00Z\",\n    \"actualArrival\": \"2020-06-12T21:25:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights/214901",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights",
+								"214901"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateAll",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"flightId\": 214902,\n    \"flightNo\": \"111111\",\n    \"status\": \"ARRIVED\",\n    \"aircraft\": {\n        \"aircraftCode\": \"CR2\",\n        \"model\": {\n            \"en\": \"Bombardier CRJ-200\",\n            \"ru\": \"Бомбардье CRJ-200\"\n        },\n        \"range\": 2700\n    },\n    \"departureAirport\": {\n        \"airportCode\": \"SKX\",\n        \"airportName\": {\n            \"en\": \"Saransk Airport\",\n            \"ru\": \"Саранск\"\n        },\n        \"city\": {\n            \"en\": \"Saransk\",\n            \"ru\": \"Саранск\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"arrivalAirport\": {\n        \"airportCode\": \"SVO\",\n        \"airportName\": {\n            \"en\": \"Sheremetyevo International Airport\",\n            \"ru\": \"Шереметьево\"\n        },\n        \"city\": {\n            \"en\": \"Moscow\",\n            \"ru\": \"Москва\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"scheduledDeparture\": \"2021-06-12T10:25:00Z\",\n    \"scheduledArrival\": \"2021-06-12T20:25:00Z\",\n    \"actualDeparture\": \"2021-06-12T11:25:00Z\",\n    \"actualArrival\": \"2021-06-12T21:25:00Z\"\n}, {\n    \"flightId\": 214903,\n    \"flightNo\": \"222222\",\n    \"status\": \"ARRIVED\",\n    \"aircraft\": {\n        \"aircraftCode\": \"CR2\",\n        \"model\": {\n            \"en\": \"Bombardier CRJ-200\",\n            \"ru\": \"Бомбардье CRJ-200\"\n        },\n        \"range\": 2700\n    },\n    \"departureAirport\": {\n        \"airportCode\": \"SKX\",\n        \"airportName\": {\n            \"en\": \"Saransk Airport\",\n            \"ru\": \"Саранск\"\n        },\n        \"city\": {\n            \"en\": \"Saransk\",\n            \"ru\": \"Саранск\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"arrivalAirport\": {\n        \"airportCode\": \"SVO\",\n        \"airportName\": {\n            \"en\": \"Sheremetyevo International Airport\",\n            \"ru\": \"Шереметьево\"\n        },\n        \"city\": {\n            \"en\": \"Moscow\",\n            \"ru\": \"Москва\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"scheduledDeparture\": \"2022-06-12T10:25:00Z\",\n    \"scheduledArrival\": \"2022-06-12T20:25:00Z\",\n    \"actualDeparture\": \"2022-06-12T11:25:00Z\",\n    \"actualArrival\": \"2022-06-12T21:25:00Z\"\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights/214901",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights",
+								"214901"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteAll",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[214902, 214903]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Для тестирования этого эндпоинта нужно вручную задавать id сущностям (в базе данных для них используется sequence и автоматизировать этот процесс не получится)"
+		},
+		{
+			"name": "api/v1/ticketflights",
+			"item": [
+				{
+					"name": "findAll",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[214902, 214903]"
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/ticketflights",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ticketflights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/ticketflights/0005434858268/94966",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ticketflights",
+								"0005434858268",
+								"94966"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fareConditions\": \"BUSINESS\",\n    \"amount\": 1.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/ticketflights/0005432002900/1",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ticketflights",
+								"0005432002900",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createAll",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"ticketNo\": \"0005432002901\",\n    \"flightId\": 1,\n    \"fareConditions\": \"BUSINESS\",\n    \"amount\": 1.0\n}, {\n    \"ticketNo\": \"0005432002902\",\n    \"flightId\": 1,\n    \"fareConditions\": \"BUSINESS\",\n    \"amount\": 1.0\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/ticketflights",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ticketflights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fareConditions\": \"BUSINESS\",\n    \"amount\": 100000.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/ticketflights/0005432002900/1",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ticketflights",
+								"0005432002900",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateAll",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"ticketNo\": \"0005432002901\",\n    \"flightId\": 1,\n    \"fareConditions\": \"BUSINESS\",\n    \"amount\": 200000.0\n}, {\n    \"ticketNo\": \"0005432002902\",\n    \"flightId\": 1,\n    \"fareConditions\": \"BUSINESS\",\n    \"amount\": 300000.0\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/ticketflights",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ticketflights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/ticketflights/0005432002900/1",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ticketflights",
+								"0005432002900",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteAll",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"ticketNo\": \"0005432002901\",\n    \"flightId\": 1\n}, {\n    \"ticketNo\": \"0005432002902\",\n    \"flightId\": 1\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/ticketflights",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ticketflights"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "api/v1/boardingpass",
+			"item": [
+				{
+					"name": "INIT TICKETFLIGHTS",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"ticketNo\": \"0005432002900\",\n    \"flightId\": 1,\n    \"fareConditions\": \"BUSINESS\",\n    \"amount\": 1.0\n}, {\n    \"ticketNo\": \"0005432002901\",\n    \"flightId\": 1,\n    \"fareConditions\": \"BUSINESS\",\n    \"amount\": 1.0\n}, {\n    \"ticketNo\": \"0005432002902\",\n    \"flightId\": 1,\n    \"fareConditions\": \"BUSINESS\",\n    \"amount\": 1.0\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/ticketflights",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ticketflights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findAll",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[214902, 214903]"
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/boardingpass",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boardingpass"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/boardingpass/0005434858268/94966",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boardingpass",
+								"0005434858268",
+								"94966"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"boardingNo\": 1,\n    \"seatNo\": \"1A\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/boardingpass/0005432002900/1",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boardingpass",
+								"0005432002900",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createAll",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"ticketNo\": \"0005432002901\",\n    \"flightId\": 1,\n    \"boardingNo\": 2,\n    \"seatNo\": \"2A\"\n}, {\n    \"ticketNo\": \"0005432002902\",\n    \"flightId\": 1,\n    \"boardingNo\": 3,\n    \"seatNo\": \"3A\"\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/boardingpass",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boardingpass"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"boardingNo\": 1,\n    \"seatNo\": \"1U\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/boardingpass/0005432002900/1",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boardingpass",
+								"0005432002900",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateAll",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"ticketNo\": \"0005432002901\",\n    \"flightId\": 1,\n    \"boardingNo\": 2,\n    \"seatNo\": \"2U\"\n}, {\n    \"ticketNo\": \"0005432002902\",\n    \"flightId\": 1,\n    \"boardingNo\": 3,\n    \"seatNo\": \"3U\"\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/boardingpass",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boardingpass"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/boardingpass/0005432002900/1",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boardingpass",
+								"0005432002900",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteAll",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"ticketNo\": \"0005432002901\",\n    \"flightId\": 1\n}, {\n    \"ticketNo\": \"0005432002902\",\n    \"flightId\": 1\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/boardingpass",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boardingpass"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REMOVE TICEKTFLIGHTS",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"ticketNo\": \"0005432002900\",\n    \"flightId\": 1\n}, {\n    \"ticketNo\": \"0005432002901\",\n    \"flightId\": 1\n}, {\n    \"ticketNo\": \"0005432002902\",\n    \"flightId\": 1\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/ticketflights",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ticketflights"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "exceptions",
+			"item": [
+				{
+					"name": "NotFoundException",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 404 Not Found\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/ERR",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"ERR"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MethodArgumentNotValidException handler",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"model\":{\n        \"en\": null,\n        \"ru\": \"бизнес модель 0\"\n    },\n    \"range\": -1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "HandlerMethodValidationException handler",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"aircraftCode\": \"111\",\n    \"model\":{\n        \"en\": \"business model 1\",\n        \"ru\": \"бизнес модель 1\"\n    },\n    \"range\": null\n}, {\n    \"aircraftCode\": \"222\",\n    \"model\":{\n        \"en\": \"business model 2\",\n        \"ru\": \"\"\n    },\n    \"range\": null\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DataAccessException handler (InvalidData)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"SCHEDULED\",\n    \"aircraft\": {\n        \"aircraftCode\": \"CR2\",\n        \"model\": {\n            \"en\": \"Bombardier CRJ-200\",\n            \"ru\": \"Бомбардье CRJ-200\"\n        },\n        \"range\": 2700\n    },\n    \"departureAirport\": {\n        \"airportCode\": \"SKX\",\n        \"airportName\": {\n            \"en\": \"Saransk Airport\",\n            \"ru\": \"Саранск\"\n        },\n        \"city\": {\n            \"en\": \"Saransk\",\n            \"ru\": \"Саранск\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"arrivalAirport\": {\n        \"airportCode\": \"SVO\",\n        \"airportName\": {\n            \"en\": \"Sheremetyevo International Airport\",\n            \"ru\": \"Шереметьево\"\n        },\n        \"city\": {\n            \"en\": \"Moscow\",\n            \"ru\": \"Москва\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"scheduledDeparture\": \"2020-06-12T10:25:00Z\",\n    \"scheduledArrival\": \"2020-06-12T20:25:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights/000000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights",
+								"000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DataAccessException handler (DataConstraintViolation)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"flightNo\": \"000000\",\n    \"status\": \"ARRIVED\",\n    \"aircraft\": {\n        \"aircraftCode\": \"CR2\",\n        \"model\": {\n            \"en\": \"Bombardier CRJ-200\",\n            \"ru\": \"Бомбардье CRJ-200\"\n        },\n        \"range\": 2700\n    },\n    \"departureAirport\": {\n        \"airportCode\": \"SKX\",\n        \"airportName\": {\n            \"en\": \"Saransk Airport\",\n            \"ru\": \"Саранск\"\n        },\n        \"city\": {\n            \"en\": \"Saransk\",\n            \"ru\": \"Саранск\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"arrivalAirport\": {\n        \"airportCode\": \"SVO\",\n        \"airportName\": {\n            \"en\": \"Sheremetyevo International Airport\",\n            \"ru\": \"Шереметьево\"\n        },\n        \"city\": {\n            \"en\": \"Moscow\",\n            \"ru\": \"Москва\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"scheduledDeparture\": \"2020-06-12T10:25:01Z\",\n    \"scheduledArrival\": \"2020-06-12T20:25:01Z\",\n    \"actualDeparture\": \"2020-06-12T11:25:00Z\",\n    \"actualArrival\": \"2020-06-12T21:25:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights/000000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights",
+								"000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "HttpMessageNotReadableException handler",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "domen\n",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

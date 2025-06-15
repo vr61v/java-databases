@@ -8,8 +8,6 @@ import org.vr61v.types.FareCondition;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"id"})
-@EqualsAndHashCode(exclude = {"id"})
 @Builder
 @Entity
 @Table(name = "seats", schema = "bookings")

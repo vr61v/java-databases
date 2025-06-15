@@ -5,7 +5,4 @@ import org.springframework.stereotype.Repository;
 import org.vr61v.entities.Airport;
 
 @Repository
-public interface AirportRepository
-        extends JpaRepository<Airport, String> {
-
-}
+public interface AirportRepository extends JpaRepository<Airport, String> { }

@@ -8,22 +8,25 @@ import org.vr61v.entities.Aircraft;
 import org.vr61v.mappers.AircraftMapper;
 import org.vr61v.services.crud.AircraftCrudService;
 
-
 @RestController
 @RequestMapping("/api/v1/aircrafts")
-public class AircraftCrudController
-        extends CrudController<Aircraft, AircraftDto, String> {
+public class AircraftCrudController extends CrudController<Aircraft, AircraftDto, String> {
 
     public AircraftCrudController(
             AircraftCrudService aircraftCrudService,
             AircraftMapper aircraftMapper
     ) {
-        super(aircraftCrudService, aircraftMapper);
+        super(aircraftCrudService, aircraftMapper, "aircraft");
     }
 
     @Override
     protected void setId(Aircraft entity, String id) {
         entity.setAircraftCode(id);
+    }
+
+    @Override
+    protected String getId(Aircraft entity) {
+        return entity.getAircraftCode();
     }
 
 }
