@@ -15,12 +15,10 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class LocalizedString {
 
-    @NotNull
-    @NotBlank
+    @NotNull @NotBlank
     private String en;
 
-    @NotNull
-    @NotBlank
+    @NotNull @NotBlank
     private String ru;
 
 }

@@ -508,27 +508,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "REMOVE AIRCRAFT",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://{{url}}/api/v1/aircrafts/000",
-							"protocol": "http",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"aircrafts",
-								"000"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -1894,23 +1873,33 @@
 						}
 					},
 					"response": []
-				},
+				}
+			]
+		},
+		{
+			"name": "exceptions",
+			"item": [
 				{
-					"name": "REMOVE TICEKTFLIGHTS",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "[{\n    \"ticketNo\": \"0005432002900\",\n    \"flightId\": 1\n}, {\n    \"ticketNo\": \"0005432002901\",\n    \"flightId\": 1\n}, {\n    \"ticketNo\": \"0005432002902\",\n    \"flightId\": 1\n}]",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
+					"name": "NotFoundException",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 404 Not Found\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
 							}
-						},
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
 						"url": {
-							"raw": "http://{{url}}/api/v1/ticketflights",
+							"raw": "http://{{url}}/api/v1/aircrafts/ERR",
 							"protocol": "http",
 							"host": [
 								"{{url}}"
@@ -1918,7 +1907,226 @@
 							"path": [
 								"api",
 								"v1",
-								"ticketflights"
+								"aircrafts",
+								"ERR"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MethodArgumentNotValidException handler",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"model\":{\n        \"en\": null,\n        \"ru\": \"бизнес модель 0\"\n    },\n    \"range\": -1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts/000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts",
+								"000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "HandlerMethodValidationException handler",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\n    \"aircraftCode\": \"111\",\n    \"model\":{\n        \"en\": \"business model 1\",\n        \"ru\": \"бизнес модель 1\"\n    },\n    \"range\": null\n}, {\n    \"aircraftCode\": \"222\",\n    \"model\":{\n        \"en\": \"business model 2\",\n        \"ru\": \"\"\n    },\n    \"range\": null\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DataAccessException handler (InvalidData)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"SCHEDULED\",\n    \"aircraft\": {\n        \"aircraftCode\": \"CR2\",\n        \"model\": {\n            \"en\": \"Bombardier CRJ-200\",\n            \"ru\": \"Бомбардье CRJ-200\"\n        },\n        \"range\": 2700\n    },\n    \"departureAirport\": {\n        \"airportCode\": \"SKX\",\n        \"airportName\": {\n            \"en\": \"Saransk Airport\",\n            \"ru\": \"Саранск\"\n        },\n        \"city\": {\n            \"en\": \"Saransk\",\n            \"ru\": \"Саранск\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"arrivalAirport\": {\n        \"airportCode\": \"SVO\",\n        \"airportName\": {\n            \"en\": \"Sheremetyevo International Airport\",\n            \"ru\": \"Шереметьево\"\n        },\n        \"city\": {\n            \"en\": \"Moscow\",\n            \"ru\": \"Москва\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"scheduledDeparture\": \"2020-06-12T10:25:00Z\",\n    \"scheduledArrival\": \"2020-06-12T20:25:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights/000000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights",
+								"000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DataAccessException handler (DataConstraintViolation)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"flightNo\": \"000000\",\n    \"status\": \"ARRIVED\",\n    \"aircraft\": {\n        \"aircraftCode\": \"CR2\",\n        \"model\": {\n            \"en\": \"Bombardier CRJ-200\",\n            \"ru\": \"Бомбардье CRJ-200\"\n        },\n        \"range\": 2700\n    },\n    \"departureAirport\": {\n        \"airportCode\": \"SKX\",\n        \"airportName\": {\n            \"en\": \"Saransk Airport\",\n            \"ru\": \"Саранск\"\n        },\n        \"city\": {\n            \"en\": \"Saransk\",\n            \"ru\": \"Саранск\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"arrivalAirport\": {\n        \"airportCode\": \"SVO\",\n        \"airportName\": {\n            \"en\": \"Sheremetyevo International Airport\",\n            \"ru\": \"Шереметьево\"\n        },\n        \"city\": {\n            \"en\": \"Moscow\",\n            \"ru\": \"Москва\"\n        },\n        \"timezone\": \"Europe/Moscow\"\n    },\n    \"scheduledDeparture\": \"2020-06-12T10:25:01Z\",\n    \"scheduledArrival\": \"2020-06-12T20:25:01Z\",\n    \"actualDeparture\": \"2020-06-12T11:25:00Z\",\n    \"actualArrival\": \"2020-06-12T21:25:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/flights/000000",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"flights",
+								"000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "HttpMessageNotReadableException handler",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/v1/aircrafts",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aircrafts"
 							]
 						}
 					},
