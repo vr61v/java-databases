@@ -23,8 +23,8 @@
 
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/<your-repo>/hibernate-ticket-system.git
-cd hibernate-ticket-system
+   git clone https://github.com/vr61v/java-databases.git
+   cd hibernate-ticket-system
 ```
 
 2. Загрузите демонстрационную базу данных:
@@ -38,35 +38,35 @@ cd hibernate-ticket-system
 
 4. Запустите sql скрипт для актуализации БД:
 ```sql
-begin ;
-
--- Исправление строк стутусов перелетов (Значения должны разделяться через 
--- нижнее подчеркивание, а все буквы должны быть заглавными)
-
-alter table flights drop constraint flights_status_check;
-update flights set status = upper(replace(status, ' ', '_'));
-
--- Аналогичное исправление для тарифов, значения переводятся в тот же формат
--- что и статусы перелетов
-
-alter table seats drop constraint seats_fare_conditions_check;
-alter table ticket_flights drop constraint ticket_flights_fare_conditions_check;
-update seats set fare_conditions = upper(fare_conditions);
-update ticket_flights set fare_conditions = upper(fare_conditions);
-
--- При запуске контейнера в бэкапе базы данных не сохранилось текущее значение
--- для последовательности id перелета, поэтому необходимо задать его в ручную
-
-select setval('flights_flight_id_seq',
-              (select max(flights. flight_id) from flights)
-       );
-
--- Удаление неиспользуемого столбца координат для аэропорта, в итоге будут 
--- удалены так же и представления, созданные с этим столбцом 
-
-alter table airports_data drop coordinates cascade ;
-
-end ;
+   begin ;
+   
+   -- Исправление строк стутусов перелетов (Значения должны разделяться через 
+   -- нижнее подчеркивание, а все буквы должны быть заглавными)
+   
+   alter table flights drop constraint flights_status_check;
+   update flights set status = upper(replace(status, ' ', '_'));
+   
+   -- Аналогичное исправление для тарифов, значения переводятся в тот же формат
+   -- что и статусы перелетов
+   
+   alter table seats drop constraint seats_fare_conditions_check;
+   alter table ticket_flights drop constraint ticket_flights_fare_conditions_check;
+   update seats set fare_conditions = upper(fare_conditions);
+   update ticket_flights set fare_conditions = upper(fare_conditions);
+   
+   -- При запуске контейнера в бэкапе базы данных не сохранилось текущее значение
+   -- для последовательности id перелета, поэтому необходимо задать его в ручную
+   
+   select setval('flights_flight_id_seq',
+                 (select max(flights. flight_id) from flights)
+          );
+   
+   -- Удаление неиспользуемого столбца координат для аэропорта, в итоге будут 
+   -- удалены так же и представления, созданные с этим столбцом 
+   
+   alter table airports_data drop coordinates cascade ;
+   
+   end ;
 ```
 
 5. Соберите проект:
@@ -100,35 +100,35 @@ end ;
 ## Использование
 
 ```java
-// Создаем менеджер сессий (одна инстанция на приложение)
-RepositorySessionManager sessionManager = new RepositorySessionManager();
-
-// Инициализируем репозиторий
-BookingRepository bookingRepository = new BookingRepository(sessionManager);
-
-// Создаем сущность
-Booking booking = Booking.builder()
-        .bookRef("123456")
-        .bookDate(OffsetDateTime.now())
-        .totalAmount(50_000.00F)
-        .build();
-
-// Сохраняем сущность
-boolean saved = bookingRepository.save(booking);
-
-// Получаем сущность
-Booking found = bookingRepository.findById(booking.getBookRef());
-
-// Обновляем сущность
-Booking updatedTotalAmount = Booking.builder()
-        .bookRef("123456")
-        .bookDate(OffsetDateTime.now())
-        .totalAmount(10_000.00F)
-        .build();
-Booking updated = bookingRepository.update(updatedTotalAmount);
-
-// Удаляем сущность
-boolean isDeleted = bookingRepository.delete(booking);
+   // Создаем менеджер сессий (одна инстанция на приложение)
+   RepositorySessionManager sessionManager = new RepositorySessionManager();
+   
+   // Инициализируем репозиторий
+   BookingRepository bookingRepository = new BookingRepository(sessionManager);
+   
+   // Создаем сущность
+   Booking booking = Booking.builder()
+           .bookRef("123456")
+           .bookDate(OffsetDateTime.now())
+           .totalAmount(50_000.00F)
+           .build();
+   
+   // Сохраняем сущность
+   boolean saved = bookingRepository.save(booking);
+   
+   // Получаем сущность
+   Booking found = bookingRepository.findById(booking.getBookRef());
+   
+   // Обновляем сущность
+   Booking updatedTotalAmount = Booking.builder()
+           .bookRef("123456")
+           .bookDate(OffsetDateTime.now())
+           .totalAmount(10_000.00F)
+           .build();
+   Booking updated = bookingRepository.update(updatedTotalAmount);
+   
+   // Удаляем сущность
+   boolean isDeleted = bookingRepository.delete(booking);
 ```
 
 ## API
